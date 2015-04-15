@@ -3,6 +3,12 @@ package org.vaadin.gridutil.client.renderer;
 import com.vaadin.client.renderers.Renderer;
 import com.vaadin.client.widget.grid.RendererCellReference;
 
+/**
+ * HTML-Drawer for boolean values
+ *
+ * @author Marten Prieß (http://www.non-rocket-science.com)
+ * @version 1.0
+ */
 public class VBooleanRenderer implements Renderer<Boolean> {
 
 	@Override

@@ -7,6 +7,7 @@ import java.util.Locale;
 
 import javax.servlet.annotation.WebServlet;
 
+import org.vaadin.gridutil.GridUtil;
 import org.vaadin.gridutil.cell.CellFilterChangedListener;
 import org.vaadin.gridutil.cell.GridCellFilter;
 import org.vaadin.gridutil.converter.SimpleStringConverter;
@@ -14,6 +15,9 @@ import org.vaadin.gridutil.demo.data.Country;
 import org.vaadin.gridutil.demo.data.DummyDataGen;
 import org.vaadin.gridutil.demo.data.Inhabitants;
 import org.vaadin.gridutil.renderer.BooleanRenderer;
+import org.vaadin.gridutil.renderer.DeleteButtonValueRenderer;
+import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
+import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer.EditDeleteButtonClickListener;
 
 import com.google.gwt.i18n.server.testing.Gender;
 import com.vaadin.annotations.Theme;
@@ -39,9 +43,9 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.renderers.ClickableRenderer.RendererClickEvent;
+import com.vaadin.ui.renderers.ClickableRenderer.RendererClickListener;
 import com.vaadin.ui.renderers.DateRenderer;
-import com.vaadin.ui.renderers.HtmlRenderer;
-import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
 @Theme("valo")
@@ -75,38 +79,76 @@ public class DemoUI extends UI {
 
 	}
 
+	private GridCellFilter filter;
+
 	private Grid genGrid() {
 		// init Grid
-		Grid grid = new Grid();
+		final Grid grid = new Grid();
 		grid.setSizeFull();
 
-		// handle columns
-		grid.addColumn("id", Long.class)
-				.setRenderer(new NumberRenderer("%d"))
+		// init Container
+		BeanItemContainer<Inhabitants> container = new BeanItemContainer<Inhabitants>(Inhabitants.class, DummyDataGen.genInhabitants(1000));
+		grid.setContainerDataSource(container);
+		grid.setColumnOrder("id", "gender", "name", "bodySize", "birthday", "onFacebook", "country");
+
+		setColumnRenderes(grid);
+
+		initFilter(grid);
+		initFooterRow(grid, container);
+		initExtraHeaderRow(grid);
+
+		initColumnAlignments(grid);
+		return grid;
+	}
+
+	private void setColumnRenderes(final Grid grid) {
+		grid.getColumn("id")
+				.setRenderer(new EditDeleteButtonValueRenderer(new EditDeleteButtonClickListener() {
+
+					@Override
+					public void onEdit(final RendererClickEvent event) {
+						Notification.show(event.getItemId()
+								.toString() + " want's to get edited", Type.HUMANIZED_MESSAGE);
+					}
+
+					@Override
+					public void onDelete(final com.vaadin.ui.renderers.ClickableRenderer.RendererClickEvent event) {
+						Notification.show(event.getItemId()
+								.toString() + " want's to get delete", Type.WARNING_MESSAGE);
+					};
+
+				}))
 				.setWidth(200);
-		grid.addColumn("gender", Enum.class);
-		grid.addColumn("name");
-		grid.addColumn("bodySize", Double.class);
-		grid.addColumn("birthday", Date.class)
+		grid.getColumn("birthday")
 				.setRenderer(new DateRenderer(DateFormat.getDateInstance()))
 				.setWidth(210);
-		grid.addColumn("onFacebook", Boolean.class)
+		grid.getColumn("onFacebook")
 				.setRenderer(new BooleanRenderer());
-		grid.addColumn("country", Country.class)
-				.setRenderer(new HtmlRenderer(), new SimpleStringConverter<Country>(Country.class) {
+
+		grid.getColumn("country")
+				.setRenderer(new DeleteButtonValueRenderer(new RendererClickListener() {
+
+					@Override
+					public void click(final RendererClickEvent event) {
+						Notification.show("country shoud get deleted in line: " + ((Inhabitants) event.getItemId()).getId(), Type.ERROR_MESSAGE);
+					}
+				}), new SimpleStringConverter<Country>(Country.class) {
 
 					@Override
 					public String convertToPresentation(final Country value, final Class<? extends String> targetType, final Locale locale)
 							throws com.vaadin.data.util.converter.Converter.ConversionException {
 						return String.format("%s <i>(%d)</i>", value.getName(), value.getPopulation());
 					}
-
 				});
+	}
 
-		// init Container with footer total count
-		BeanItemContainer<Inhabitants> container = new BeanItemContainer<Inhabitants>(Inhabitants.class, DummyDataGen.genInhabitants(1000));
-		grid.setContainerDataSource(container);
-
+	/**
+	 * generates a simple totalCount footer
+	 * 
+	 * @param grid
+	 * @param container
+	 */
+	private void initFooterRow(final Grid grid, final BeanItemContainer<Inhabitants> container) {
 		final FooterRow footerRow = grid.appendFooterRow();
 		footerRow.getCell("id")
 				.setHtml("total:");
@@ -126,28 +168,40 @@ public class DemoUI extends UI {
 								.size() + "</b>");
 			}
 		});
+	}
 
-		// init filter
-		final GridCellFilter filter = new GridCellFilter(grid);
-		filter.setNumberFilter("id");
+	/**
+	 * initialize a GridCellFilter
+	 * 
+	 * @param grid
+	 */
+	private void initFilter(final Grid grid) {
+		this.filter = new GridCellFilter(grid);
+		this.filter.setNumberFilter("id");
 
 		// set gender Combo with custom icons
-		ComboBox genderCombo = filter.setComboBoxFilter("gender", Arrays.asList(Gender.MALE, Gender.FEMALE));
+		ComboBox genderCombo = this.filter.setComboBoxFilter("gender", Arrays.asList(Gender.MALE, Gender.FEMALE));
 		genderCombo.setItemIcon(Gender.MALE, FontAwesome.MALE);
 		genderCombo.setItemIcon(Gender.FEMALE, FontAwesome.FEMALE);
 
 		// simple filters
-		filter.setTextFilter("name", true, true);
-		filter.setNumberFilter("bodySize");
-		filter.setDateFilter("birthday");
-		filter.setBooleanFilter("onFacebook");
+		this.filter.setTextFilter("name", true, true);
+		this.filter.setNumberFilter("bodySize");
+		this.filter.setDateFilter("birthday");
+		this.filter.setBooleanFilter("onFacebook");
 
 		// set country combo with custom caption
-		ComboBox countryCombo = filter.setComboBoxFilter("country", DummyDataGen.COUNTRIES);
+		ComboBox countryCombo = this.filter.setComboBoxFilter("country", DummyDataGen.COUNTRIES);
 		countryCombo.setItemCaptionMode(ItemCaptionMode.PROPERTY);
 		countryCombo.setItemCaptionPropertyId("name");
+	}
 
-		// interact with GridCellFilter
+	/**
+	 * interacts with the GridCellFilter
+	 * 
+	 * @param grid
+	 */
+	private void initExtraHeaderRow(final Grid grid) {
 		HeaderRow fistHeaderRow = grid.prependHeaderRow();
 		fistHeaderRow.join("id", "gender", "name", "bodySize", "birthday");
 		fistHeaderRow.getCell("id")
@@ -161,7 +215,7 @@ public class DemoUI extends UI {
 
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				filter.clearAllFilters();
+				DemoUI.this.filter.clearAllFilters();
 			}
 		});
 		clearAllFilters.setIcon(FontAwesome.TIMES);
@@ -169,22 +223,35 @@ public class DemoUI extends UI {
 		buttonLayout.addComponent(clearAllFilters);
 
 		// listener's on filter
-		filter.addCellFilterChangedListener(new CellFilterChangedListener() {
+		this.filter.addCellFilterChangedListener(new CellFilterChangedListener() {
 
 			@Override
 			public void changedFilter(final GridCellFilter cellFilter) {
 				Notification.show("cellFilter changed " + new Date().toLocaleString(), Type.TRAY_NOTIFICATION);
 			}
 		});
+	}
 
-		// mark column for alignments
+	/**
+	 * uses the inbuild alignments
+	 * 
+	 * @param grid
+	 */
+	private void initColumnAlignments(final Grid grid) {
 		grid.setCellStyleGenerator(new CellStyleGenerator() {
 			@Override
 			public String getStyle(final CellReference cellReference) {
-				return cellReference.getPropertyId()
-						.equals("id") ? "rightalign" : null;
+				if (cellReference.getPropertyId()
+						.equals("id")) {
+					return GridUtil.ALIGN_CELL_RIGHT;
+				} else if (cellReference.getPropertyId()
+						.equals("birthday")) {
+					return GridUtil.ALIGN_CELL_CENTER;
+				} else {
+					return null;
+				}
 			}
 		});
-		return grid;
 	}
+
 }

@@ -80,4 +80,9 @@ public class Inhabitants {
 		this.country = country;
 	}
 
+	@Override
+	public String toString() {
+		return "Inhabitants [id=" + this.id + ", name=" + this.name + "]";
+	}
+
 }
