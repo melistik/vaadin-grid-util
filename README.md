@@ -1,9 +1,14 @@
 Vaadin GridUtil
 ==============
 
-A Toolkit in order to simplify the use of the Grid. Mainly it add's an easy way to set Filters and adds some missing Renders.
+A Toolkit that simplify the use of the Grid and add missing features. 
 
 ![screenshot](assets/screenshot.jpg)
+
+- introduce a easy way to build a filterrow
+- adds renderers that allows to display a combination of button and value within one cell (missing edit/delete button)
+- shorten the lines of code for writing StringConverter
+- add missing css-settings for cell alignment
 
 Workflow
 ========
@@ -19,7 +24,7 @@ Add the dependency to your pom the GWT inherits will get automatically added by 
 ```
 
 ```xml
-<inherits name="org.vaadin.sliderpanel.Widgetset" />
+<inherits name="org.vaadin.gridutil.WidgetSet" />
 ```
 
 Details to the addon you can find on [Vaadin](https://vaadin.com/directory#addon/grid-util)
@@ -66,7 +71,32 @@ filter.addCellFilterChangedListener(new CellFilterChangedListener() {
 
 Renderer
 ========
-The current version contains a BooleanRenderer that will convert the values into FontAwesome Icons. More Renderer are planned.
+The missing feature of adding generatedColumns to a Grid especially in combination with BeanItemContainer leads me to the development of a Render in order to combine avalue and buttons within one cell.
+This allows to easily display for example the ID-Column incudling buttons for edit and/or delete.
+
+```java
+grid.getColumn("id")
+		.setRenderer(new EditDeleteButtonValueRenderer(new EditDeleteButtonClickListener() {
+
+			@Override
+			public void onEdit(final RendererClickEvent event) {
+				Notification.show(event.getItemId()
+						.toString() + " want's to get edited", Type.HUMANIZED_MESSAGE);
+			}
+
+			@Override
+			public void onDelete(final com.vaadin.ui.renderers.ClickableRenderer.RendererClickEvent event) {
+				Notification.show(event.getItemId()
+						.toString() + " want's to get delete", Type.WARNING_MESSAGE);
+			};
+
+		}))
+		.setWidth(200);
+```
+
+A single edit *(EditButtonValueRenderer)* or delete *(DeleteButtonValueRenderer)* button renderer is also available.
+
+Further more a BooleanRenderer that will convert the values into FontAwesome Icons is included.
 
 Converter
 ========
