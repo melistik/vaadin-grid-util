@@ -49,7 +49,7 @@ import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
 @Theme("valo")
-@Title("MyComponent Add-on Demo")
+@Title("GridUtil")
 @SuppressWarnings("serial")
 public class DemoUI extends UI {
 

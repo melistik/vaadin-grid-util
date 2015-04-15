@@ -27,7 +27,7 @@ Add the dependency to your pom the GWT inherits will get automatically added by 
 <inherits name="org.vaadin.gridutil.WidgetSet" />
 ```
 
-Details to the addon you can find on [Vaadin](https://vaadin.com/directory#addon/grid-util)
+Details to the addon you can find on [Vaadin](https://vaadin.com/directory#!addon/gridutil)
 
 Filtering
 ========
