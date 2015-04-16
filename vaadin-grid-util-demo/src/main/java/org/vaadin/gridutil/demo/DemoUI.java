@@ -118,12 +118,15 @@ public class DemoUI extends UI {
 					};
 
 				}))
-				.setWidth(200);
+				.setWidth(150);
+		grid.getColumn("bodySize")
+				.setWidth(150);
 		grid.getColumn("birthday")
 				.setRenderer(new DateRenderer(DateFormat.getDateInstance()))
 				.setWidth(210);
 		grid.getColumn("onFacebook")
-				.setRenderer(new BooleanRenderer());
+				.setRenderer(new BooleanRenderer())
+				.setWidth(130);
 
 		grid.getColumn("country")
 				.setRenderer(new DeleteButtonValueRenderer(new RendererClickListener() {
