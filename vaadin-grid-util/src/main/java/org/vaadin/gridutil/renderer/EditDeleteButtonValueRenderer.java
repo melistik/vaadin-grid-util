@@ -41,7 +41,7 @@ public class EditDeleteButtonValueRenderer extends ClickableRenderer<String> {
 
 			@Override
 			public void click(final com.vaadin.ui.renderers.ClickableRenderer.RendererClickEvent event) {
-				if (event.getRelativeX() < 31) {
+				if (event.getRelativeX() <= 9) {
 					listener.onEdit(event);
 				} else {
 					listener.onDelete(event);

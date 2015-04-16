@@ -23,6 +23,6 @@
     -->
     <!-- <set-configuration-property name="devModeRedirectEnabled" value="true" /> -->
     
-    <stylesheet src="grid-util.css?v=1.0.0"/>
+    <stylesheet src="grid-util.css?v=1.0.1"/>
     
 </module>
