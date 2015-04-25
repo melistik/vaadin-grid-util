@@ -54,10 +54,11 @@ import com.vaadin.ui.themes.ValoTheme;
 public class GridCellFilter {
 
 	private final Grid grid;
-	private final HeaderRow filterHeaderRow;
+	private HeaderRow filterHeaderRow;
 	private final Map<String, CellFilterComponent<?>> cellFilters;
 	private final Map<String, Filter> assignedFilters;
 	private final List<CellFilterChangedListener> cellFilterChangedListeners;
+	private boolean visible = true;
 
 	/**
 	 * keeps link to Grid and added HeaderRow<br>
@@ -72,6 +73,35 @@ public class GridCellFilter {
 		this.cellFilters = new HashMap<String, CellFilterComponent<?>>();
 		this.assignedFilters = new HashMap<String, Filter>();
 		this.cellFilterChangedListeners = new ArrayList<CellFilterChangedListener>();
+	}
+
+	/**
+	 * will remove or add the filterHeaderRow<br>
+	 * badly the Connectors of the Cell-Components log an error message<br>
+	 * <i>Widget is still attached to the DOM after the connector ComboBoxConnector has been unregistered. Widget was removed</i><br>
+	 * that's why it deprecated. The grid itself has no feature for changing the visibility of a headerRow
+	 * 
+	 * @param visibile
+	 */
+	@Deprecated
+	public void setVisible(final boolean visibile) {
+		if (this.visible != visibile) {
+			if (visibile) {
+				this.filterHeaderRow = this.grid.appendHeaderRow();
+
+				for (Entry<String, CellFilterComponent<?>> entry : this.cellFilters.entrySet()) {
+					handleFilterRow(entry.getKey(), entry.getValue());
+				}
+			} else {
+				clearAllFilters();
+				for (Entry<String, CellFilterComponent<?>> entry : this.cellFilters.entrySet()) {
+					this.filterHeaderRow.getCell(entry.getKey())
+							.setText("");
+				}
+				this.grid.removeHeaderRow(this.filterHeaderRow);
+			}
+			this.visible = visibile;
+		}
 	}
 
 	/**

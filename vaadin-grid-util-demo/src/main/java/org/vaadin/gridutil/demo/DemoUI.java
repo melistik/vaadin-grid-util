@@ -225,6 +225,23 @@ public class DemoUI extends UI {
 		clearAllFilters.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
 		buttonLayout.addComponent(clearAllFilters);
 
+		final Button changeVisibility = new Button("changeVisibility");
+		changeVisibility.addClickListener(new Button.ClickListener() {
+
+			private boolean visibile = true;
+
+			@Override
+			public void buttonClick(final ClickEvent event) {
+				this.visibile = !this.visibile;
+				changeVisibility.setIcon(this.visibile ? FontAwesome.EYE_SLASH : FontAwesome.EYE);
+				DemoUI.this.filter.setVisible(this.visibile);
+				Notification.show("changed visibility to: " + this.visibile + " it has removed the header row!");
+			}
+		});
+		changeVisibility.setIcon(FontAwesome.EYE_SLASH);
+		changeVisibility.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+		buttonLayout.addComponent(changeVisibility);
+
 		// listener's on filter
 		this.filter.addCellFilterChangedListener(new CellFilterChangedListener() {
 
