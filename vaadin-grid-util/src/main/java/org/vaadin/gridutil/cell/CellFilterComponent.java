@@ -24,11 +24,11 @@ public abstract class CellFilterComponent<C extends Component> {
 	 * 
 	 * @return
 	 */
-	abstract C layoutComponent();
+	public abstract C layoutComponent();
 
 	/**
 	 * implement clearValues
 	 */
-	abstract void clearFilter();
+	public abstract void clearFilter();
 
 }

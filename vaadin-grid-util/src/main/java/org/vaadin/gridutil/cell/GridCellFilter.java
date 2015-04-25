@@ -163,7 +163,7 @@ public class GridCellFilter {
 	 * @param filter
 	 * @param columnId
 	 */
-	private void replaceFilter(final Filter filter, final String columnId) {
+	public void replaceFilter(final Filter filter, final String columnId) {
 		Filterable f = (Filterable) this.grid.getContainerDataSource();
 		if (this.assignedFilters.containsKey(columnId)) {
 			f.removeContainerFilter(this.assignedFilters.get(columnId));
@@ -174,7 +174,7 @@ public class GridCellFilter {
 		notifyCellFilterChanged();
 	}
 
-	private void removeFilter(final String columnId) {
+	public void removeFilter(final String columnId) {
 		removeFilter(columnId, true);
 	}
 
@@ -206,7 +206,7 @@ public class GridCellFilter {
 			TextField textField = new TextField();
 
 			@Override
-			TextField layoutComponent() {
+			public TextField layoutComponent() {
 				this.textField.setImmediate(true);
 				this.textField.addStyleName(ValoTheme.TEXTFIELD_TINY);
 				this.textField.addTextChangeListener(new TextChangeListener() {
@@ -224,7 +224,7 @@ public class GridCellFilter {
 			}
 
 			@Override
-			void clearFilter() {
+			public void clearFilter() {
 				this.textField.clear();
 			}
 		};
@@ -246,7 +246,7 @@ public class GridCellFilter {
 			ComboBox comboBox = new ComboBox();
 
 			@Override
-			ComboBox layoutComponent() {
+			public ComboBox layoutComponent() {
 				BeanItemContainer container = new BeanItemContainer(list.get(0)
 						.getClass(), list);
 
@@ -271,7 +271,7 @@ public class GridCellFilter {
 			}
 
 			@Override
-			void clearFilter() {
+			public void clearFilter() {
 				this.comboBox.setValue(null);
 			}
 		};
@@ -303,7 +303,7 @@ public class GridCellFilter {
 			}
 
 			@Override
-			ComboBox layoutComponent() {
+			public ComboBox layoutComponent() {
 
 				this.comboBox.addContainerProperty("icon", FontIcon.class, null);
 				this.comboBox.addContainerProperty("value", Boolean.class, null);
@@ -337,7 +337,7 @@ public class GridCellFilter {
 			}
 
 			@Override
-			void clearFilter() {
+			public void clearFilter() {
 				this.comboBox.setValue(null);
 			}
 		};
@@ -402,7 +402,7 @@ public class GridCellFilter {
 			}
 
 			@Override
-			HorizontalLayout layoutComponent() {
+			public HorizontalLayout layoutComponent() {
 				getFieldGroup().setItemDataSource(genPropertysetItem(type));
 
 				TextField smallest = genNumberField("smallest");
@@ -460,7 +460,7 @@ public class GridCellFilter {
 			}
 
 			@Override
-			void clearFilter() {
+			public void clearFilter() {
 				getFieldGroup().clear();
 			}
 		};
@@ -507,7 +507,7 @@ public class GridCellFilter {
 			}
 
 			@Override
-			HorizontalLayout layoutComponent() {
+			public HorizontalLayout layoutComponent() {
 				getFieldGroup().setItemDataSource(genPropertysetItem(Date.class));
 
 				DateField smallest = genDateField("smallest");
@@ -548,7 +548,7 @@ public class GridCellFilter {
 			}
 
 			@Override
-			void clearFilter() {
+			public void clearFilter() {
 				getFieldGroup().clear();
 			}
 		};
