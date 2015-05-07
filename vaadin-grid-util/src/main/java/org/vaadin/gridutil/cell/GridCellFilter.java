@@ -220,6 +220,20 @@ public class GridCellFilter {
 	}
 
 	/**
+	 * allows to add custom FilterComponents to the GridCellFilter
+	 * 
+	 * @param columnId
+	 *            property of component
+	 * @param component
+	 *            that implements the interface
+	 * @return your created component that is linked with the GridCellFilter
+	 */
+	public CellFilterComponent setCustomFilter(final String columnId, final CellFilterComponent component) {
+		handleFilterRow(columnId, component);
+		return component;
+	}
+
+	/**
 	 * assign a <b>SimpleStringFilter</b> to grid for given columnId<br>
 	 * could also be used for NumberField when you would like to do filter by startWith for example
 	 * 
@@ -301,10 +315,8 @@ public class GridCellFilter {
 				this.comboBox.setNullSelectionAllowed(true);
 				this.comboBox.setImmediate(true);
 				this.comboBox.setContainerDataSource(container);
-				this.comboBox.addStyleName(ValoTheme.TEXTFIELD_TINY);
+				this.comboBox.addStyleName(ValoTheme.COMBOBOX_TINY);
 				this.comboBox.addValueChangeListener(new ValueChangeListener() {
-
-					Equal filter = null;
 
 					@Override
 					public void valueChange(final ValueChangeEvent event) {
@@ -366,10 +378,8 @@ public class GridCellFilter {
 
 				this.comboBox.setNullSelectionAllowed(true);
 				this.comboBox.setImmediate(true);
-				this.comboBox.addStyleName(ValoTheme.TEXTFIELD_TINY);
+				this.comboBox.addStyleName(ValoTheme.COMBOBOX_TINY);
 				this.comboBox.addValueChangeListener(new ValueChangeListener() {
-
-					Equal filter = null;
 
 					@Override
 					public void valueChange(final ValueChangeEvent event) {
@@ -554,7 +564,7 @@ public class GridCellFilter {
 				dateField.setInvalidAllowed(false);
 				dateField.setInvalidCommitted(false);
 				dateField.setResolution(Resolution.DAY);
-				dateField.addStyleName(ValoTheme.TEXTFIELD_TINY);
+				dateField.addStyleName(ValoTheme.DATEFIELD_TINY);
 				dateField.addValueChangeListener(new ValueChangeListener() {
 
 					@Override
