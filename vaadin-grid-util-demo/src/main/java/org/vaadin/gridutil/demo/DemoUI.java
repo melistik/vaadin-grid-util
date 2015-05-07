@@ -188,8 +188,8 @@ public class DemoUI extends UI {
 		genderCombo.setItemIcon(Gender.FEMALE, FontAwesome.FEMALE);
 
 		// simple filters
-		this.filter.setTextFilter("name", true, true);
-		this.filter.setNumberFilter("bodySize");
+		this.filter.setTextFilter("name", true, true, "name starts with");
+		this.filter.setNumberFilter("bodySize", "smallest", "biggest");
 		this.filter.setDateFilter("birthday");
 		this.filter.setBooleanFilter("onFacebook");
 

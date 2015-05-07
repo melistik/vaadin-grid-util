@@ -231,6 +231,23 @@ public class GridCellFilter {
 	 * @return generated TextField
 	 */
 	public TextField setTextFilter(final String columnId, final boolean ignoreCase, final boolean onlyMatchPrefix) {
+		return this.setTextFilter(columnId, ignoreCase, onlyMatchPrefix, null);
+	}
+
+	/**
+	 * assign a <b>SimpleStringFilter</b> to grid for given columnId<br>
+	 * could also be used for NumberField when you would like to do filter by startWith for example
+	 * 
+	 * @param columnId
+	 * @param ignoreCase
+	 *            property of SimpleStringFilter
+	 * @param onlyMatchPrefix
+	 *            property of SimpleStringFilter
+	 * @param inputPrompt
+	 *            hint for user
+	 * @return generated TextField
+	 */
+	public TextField setTextFilter(final String columnId, final boolean ignoreCase, final boolean onlyMatchPrefix, final String inputPrompt) {
 		CellFilterComponent<TextField> filter = new CellFilterComponent<TextField>() {
 
 			TextField textField = new TextField();
@@ -238,6 +255,7 @@ public class GridCellFilter {
 			@Override
 			public TextField layoutComponent() {
 				this.textField.setImmediate(true);
+				this.textField.setInputPrompt(inputPrompt);
 				this.textField.addStyleName(ValoTheme.TEXTFIELD_TINY);
 				this.textField.addTextChangeListener(new TextChangeListener() {
 					@Override
@@ -384,6 +402,21 @@ public class GridCellFilter {
 	 * @return FieldGroup that holds both TextFields (smallest and biggest as propertyId)
 	 */
 	public FieldGroup setNumberFilter(final String columnId) {
+		return this.setNumberFilter(columnId, null, null);
+	}
+
+	/**
+	 * assign a <b>BetweenFilter</b> to grid for given columnId<br>
+	 * only supports type of <b>Integer, Double, Float, BigInteger and BigDecimal</b>
+	 * 
+	 * @param columnId
+	 * @param smallestInputPrompt
+	 *            hint for user
+	 * @param biggestInputPrompt
+	 *            hint for user
+	 * @return FieldGroup that holds both TextFields (smallest and biggest as propertyId)
+	 */
+	public FieldGroup setNumberFilter(final String columnId, final String smallestInputPrompt, final String biggestInputPrompt) {
 		final Class type = this.grid.getContainerDataSource()
 				.getType(columnId);
 		RangeCellFilterComponent<HorizontalLayout> filter = new RangeCellFilterComponent<HorizontalLayout>() {
@@ -436,7 +469,9 @@ public class GridCellFilter {
 				getFieldGroup().setItemDataSource(genPropertysetItem(type));
 
 				TextField smallest = genNumberField("smallest");
+				smallest.setInputPrompt(smallestInputPrompt);
 				TextField biggest = genNumberField("biggest");
+				biggest.setInputPrompt(biggestInputPrompt);
 				getHLayout().addComponent(smallest);
 				getHLayout().addComponent(biggest);
 				getHLayout().setExpandRatio(smallest, 1);
