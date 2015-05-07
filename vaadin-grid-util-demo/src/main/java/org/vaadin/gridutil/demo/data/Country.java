@@ -1,10 +1,19 @@
 package org.vaadin.gridutil.demo.data;
 
-
 public class Country {
 
 	public enum Continent {
-		AS, EU, AF, OC, NA, SA, AN;
+		AS("Asia"), EU("Europe"), AF("Africa"), OC("Oceania"), NA("North america"), SA("South america"), AN("Antarctica");
+
+		private String display;
+
+		Continent(final String display) {
+			this.display = display;
+		}
+
+		public String getDisplay() {
+			return this.display;
+		}
 	}
 
 	private String isoCode;
