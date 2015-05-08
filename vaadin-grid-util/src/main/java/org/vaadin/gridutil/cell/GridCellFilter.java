@@ -69,6 +69,7 @@ public class GridCellFilter implements Serializable {
 	 * please take care that your Container implements Filterable!
 	 * 
 	 * @param grid
+	 *            that should get added a HeaderRow that this component will manage
 	 */
 	public GridCellFilter(final Grid grid) {
 		this.grid = grid;
@@ -85,6 +86,7 @@ public class GridCellFilter implements Serializable {
 	 * that's why it deprecated. The grid itself has no feature for changing the visibility of a headerRow
 	 * 
 	 * @param visibile
+	 *            should get displayed?
 	 */
 	@Deprecated
 	public void setVisible(final boolean visibile) {
@@ -110,7 +112,7 @@ public class GridCellFilter implements Serializable {
 	/**
 	 * generated HeaderRow
 	 * 
-	 * @return
+	 * @return added HeaderRow during intialization
 	 */
 	public HeaderRow getFilterRow() {
 		return this.filterHeaderRow;
@@ -119,7 +121,7 @@ public class GridCellFilter implements Serializable {
 	/**
 	 * get list of filtered ColumnIds
 	 * 
-	 * @return
+	 * @return id of all properties that are currently filtered
 	 */
 	public Set<String> filteredColumnIds() {
 		return this.assignedFilters.keySet();
@@ -129,6 +131,7 @@ public class GridCellFilter implements Serializable {
 	 * add a listener for filter changes
 	 * 
 	 * @param listener
+	 *            that should get triggered on changes
 	 */
 	public void addCellFilterChangedListener(final CellFilterChangedListener listener) {
 		this.cellFilterChangedListeners.add(listener);
@@ -138,12 +141,16 @@ public class GridCellFilter implements Serializable {
 	 * remove a listener for filter changes
 	 * 
 	 * @param listener
-	 * @return
+	 *            that should get removed
+	 * @return true when found and removed
 	 */
 	public boolean removeCellFilterChangedListener(final CellFilterChangedListener listener) {
 		return this.cellFilterChangedListeners.remove(listener);
 	}
 
+	/**
+	 * notify all registered listeners
+	 */
 	protected void notifyCellFilterChanged() {
 		for (CellFilterChangedListener listener : this.cellFilterChangedListeners) {
 			listener.changedFilter(this);
@@ -166,6 +173,7 @@ public class GridCellFilter implements Serializable {
 	 * clear's a specific filter by columnId
 	 * 
 	 * @param columnId
+	 *            id of property
 	 */
 	public void clearFilter(final String columnId) {
 		this.cellFilters.get(columnId)
@@ -177,6 +185,7 @@ public class GridCellFilter implements Serializable {
 	 * link component to headerRow and take care for styling
 	 * 
 	 * @param columnId
+	 *            id of property
 	 * @param cellFilter
 	 *            component will get added to filterRow
 	 */
@@ -194,7 +203,9 @@ public class GridCellFilter implements Serializable {
 	 * checks assignedFilters replace already handled one and add new one
 	 * 
 	 * @param filter
+	 *            container filter
 	 * @param columnId
+	 *            id of property
 	 */
 	public void replaceFilter(final Filter filter, final String columnId) {
 		Filterable f = (Filterable) this.grid.getContainerDataSource();
@@ -207,6 +218,12 @@ public class GridCellFilter implements Serializable {
 		notifyCellFilterChanged();
 	}
 
+	/**
+	 * remove the filter and notify listeners
+	 * 
+	 * @param columnId
+	 *            id of property
+	 */
 	public void removeFilter(final String columnId) {
 		removeFilter(columnId, true);
 	}
@@ -226,7 +243,7 @@ public class GridCellFilter implements Serializable {
 	 * allows to add custom FilterComponents to the GridCellFilter
 	 * 
 	 * @param columnId
-	 *            property of component
+	 *            id of property
 	 * @param component
 	 *            that implements the interface
 	 * @return your created component that is linked with the GridCellFilter
@@ -241,6 +258,7 @@ public class GridCellFilter implements Serializable {
 	 * could also be used for NumberField when you would like to do filter by startWith for example
 	 * 
 	 * @param columnId
+	 *            id of property
 	 * @param ignoreCase
 	 *            property of SimpleStringFilter
 	 * @param onlyMatchPrefix
@@ -256,6 +274,7 @@ public class GridCellFilter implements Serializable {
 	 * could also be used for NumberField when you would like to do filter by startWith for example
 	 * 
 	 * @param columnId
+	 *            id of property
 	 * @param ignoreCase
 	 *            property of SimpleStringFilter
 	 * @param onlyMatchPrefix
@@ -267,6 +286,7 @@ public class GridCellFilter implements Serializable {
 	public TextField setTextFilter(final String columnId, final boolean ignoreCase, final boolean onlyMatchPrefix, final String inputPrompt) {
 		CellFilterComponent<TextField> filter = new CellFilterComponent<TextField>() {
 
+			private static final long serialVersionUID = 1L;
 			TextField textField = new TextField();
 
 			@Override
@@ -304,13 +324,15 @@ public class GridCellFilter implements Serializable {
 	 * assign a <b>EqualFilter</b> to grid for given columnId
 	 * 
 	 * @param columnId
+	 *            id of property
 	 * @param list
 	 *            selection for ComboBox
-	 * @return generated ComboBox
+	 * @return drawn comboBox in order to add some custom styles
 	 */
 	public ComboBox setComboBoxFilter(final String columnId, final List list) {
 		CellFilterComponent<ComboBox> filter = new CellFilterComponent<ComboBox>() {
 
+			private static final long serialVersionUID = 1L;
 			ComboBox comboBox = new ComboBox();
 
 			@Override
@@ -352,11 +374,13 @@ public class GridCellFilter implements Serializable {
 	 * assign a <b>EqualFilter</b> to grid for given columnId
 	 * 
 	 * @param columnId
-	 * @return
+	 *            id of property
+	 * @return drawn comboBox in order to add some custom styles
 	 */
 	public ComboBox setBooleanFilter(final String columnId) {
 		CellFilterComponent<ComboBox> filter = new CellFilterComponent<ComboBox>() {
 
+			private static final long serialVersionUID = 1L;
 			ComboBox comboBox = new ComboBox();
 
 			private Item genItem(final Boolean value) {
@@ -419,6 +443,7 @@ public class GridCellFilter implements Serializable {
 	 * only supports type of <b>Integer, Double, Float, BigInteger and BigDecimal</b>
 	 * 
 	 * @param columnId
+	 *            id of property
 	 * @return FieldGroup that holds both TextFields (smallest and biggest as propertyId)
 	 */
 	public FieldGroup setNumberFilter(final String columnId) {
@@ -430,6 +455,7 @@ public class GridCellFilter implements Serializable {
 	 * only supports type of <b>Integer, Double, Float, BigInteger and BigDecimal</b>
 	 * 
 	 * @param columnId
+	 *            id of property
 	 * @param smallestInputPrompt
 	 *            hint for user
 	 * @param biggestInputPrompt
@@ -440,6 +466,8 @@ public class GridCellFilter implements Serializable {
 		final Class type = this.grid.getContainerDataSource()
 				.getType(columnId);
 		RangeCellFilterComponent<HorizontalLayout> filter = new RangeCellFilterComponent<HorizontalLayout>() {
+
+			private static final long serialVersionUID = 1L;
 
 			private Converter getConverter() {
 				if (type == Integer.class) {
@@ -566,10 +594,16 @@ public class GridCellFilter implements Serializable {
 	 * assign a <b>BetweenFilter</b> to grid for given columnId<br>
 	 * 
 	 * @param columnId
+	 *            id of property
 	 * @return FieldGroup that holds both TextFields (smallest and biggest as propertyId)
 	 */
 	public FieldGroup setDateFilter(final String columnId) {
 		RangeCellFilterComponent<HorizontalLayout> filter = new RangeCellFilterComponent<HorizontalLayout>() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
 			private DateField genDateField(final String propertyId) {
 				final DateField dateField = new DateField();

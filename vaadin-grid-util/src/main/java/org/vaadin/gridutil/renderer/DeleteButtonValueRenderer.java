@@ -10,6 +10,12 @@ import com.vaadin.ui.renderers.ClickableRenderer;
  */
 public class DeleteButtonValueRenderer extends ClickableRenderer<String> {
 
+	/**
+	 * "injects" a delete button in the cell
+	 * 
+	 * @param listener
+	 *            that get triggered on click on the button
+	 */
 	public DeleteButtonValueRenderer(final RendererClickListener listener) {
 		super(String.class);
 		addClickListener(listener);

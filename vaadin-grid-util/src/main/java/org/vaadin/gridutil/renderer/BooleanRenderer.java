@@ -10,6 +10,9 @@ import com.vaadin.ui.Grid.AbstractRenderer;
  */
 public class BooleanRenderer extends AbstractRenderer<Boolean> {
 
+	/**
+	 * simple boolean renderer that display true/false as icons
+	 */
 	public BooleanRenderer() {
 		super(Boolean.class);
 	}

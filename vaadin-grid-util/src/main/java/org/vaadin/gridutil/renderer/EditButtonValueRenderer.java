@@ -10,6 +10,12 @@ import com.vaadin.ui.renderers.ClickableRenderer;
  */
 public class EditButtonValueRenderer extends ClickableRenderer<String> {
 
+	/**
+	 * "injects" a edit button in the cell
+	 * 
+	 * @param listener
+	 *            that get triggered on click on the button
+	 */
 	public EditButtonValueRenderer(final RendererClickListener listener) {
 		super(String.class);
 		addClickListener(listener);

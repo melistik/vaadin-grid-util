@@ -18,6 +18,11 @@ public abstract class RangeCellFilterComponent<C extends Component> extends Cell
 	private HorizontalLayout hLayout;
 	private FieldGroup fieldGroup;
 
+	/**
+	 * creates the layout when not already done
+	 * 
+	 * @return a HLayout with already set style
+	 */
 	public HorizontalLayout getHLayout() {
 		if (this.hLayout == null) {
 			this.hLayout = new HorizontalLayout();
@@ -26,6 +31,11 @@ public abstract class RangeCellFilterComponent<C extends Component> extends Cell
 		return this.hLayout;
 	}
 
+	/**
+	 * create fieldgroup when not already done
+	 * 
+	 * @return instance of fieldgroup
+	 */
 	public FieldGroup getFieldGroup() {
 		if (this.fieldGroup == null) {
 			this.fieldGroup = new FieldGroup();
@@ -33,6 +43,13 @@ public abstract class RangeCellFilterComponent<C extends Component> extends Cell
 		return this.fieldGroup;
 	}
 
+	/**
+	 * creates an PropertysetItem with two properties (smallest and biggest)
+	 * 
+	 * @param type
+	 *            that both properties should have
+	 * @return generated PropertysetItem with null as value for both properties
+	 */
 	public PropertysetItem genPropertysetItem(final Class type) {
 		PropertysetItem item = new PropertysetItem();
 		item.addItemProperty("smallest", new ObjectProperty(null, type));

@@ -25,7 +25,7 @@ public abstract class CellFilterComponent<C extends Component> implements Serial
 	/**
 	 * main component that is painted in the filterRow
 	 * 
-	 * @return
+	 * @return to render vaadin component
 	 */
 	public abstract C layoutComponent();
 

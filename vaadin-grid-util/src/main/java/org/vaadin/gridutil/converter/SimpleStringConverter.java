@@ -15,6 +15,12 @@ public abstract class SimpleStringConverter<MODEL> implements Converter<String, 
 
 	private final Class<MODEL> type;
 
+	/**
+	 * init a short version of a converter
+	 * 
+	 * @param type
+	 *            the type of the model that should get converted to String
+	 */
 	public SimpleStringConverter(final Class<MODEL> type) {
 		this.type = type;
 	}

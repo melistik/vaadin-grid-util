@@ -19,20 +19,28 @@ public class EditDeleteButtonValueRenderer extends ClickableRenderer<String> {
 		 * get fired when editButton is clicked
 		 * 
 		 * @param event
+		 *            clickEvent
 		 */
-		void onEdit(RendererClickEvent event);
+		void onEdit(final RendererClickEvent event);
 
 		/**
 		 * get fired when deleteButton is clicked
 		 * 
 		 * @param event
+		 *            clickEvent
 		 */
-		void onDelete(RendererClickEvent event);
+		void onDelete(final RendererClickEvent event);
 
 	}
 
 	private final EditDeleteButtonClickListener listener;
 
+	/**
+	 * "injects" a delete button in the cell
+	 * 
+	 * @param listener
+	 *            that get triggered on click on both buttons
+	 */
 	public EditDeleteButtonValueRenderer(final EditDeleteButtonClickListener listener) {
 		super(String.class);
 		this.listener = listener;

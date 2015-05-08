@@ -10,5 +10,11 @@ import java.io.Serializable;
  */
 public interface CellFilterChangedListener extends Serializable {
 
+	/**
+	 * triggered then filter settings have changed
+	 * 
+	 * @param cellFilter
+	 *            to easily access all parameters and current setttings
+	 */
 	void changedFilter(final GridCellFilter cellFilter);
 }
