@@ -1,7 +1,16 @@
 package org.vaadin.gridutil;
 
+import java.io.Serializable;
 
-public class GridUtil {
+/**
+ * contains some css class names for styling the grid
+ * 
+ * @author Marten Prieß (http://www.non-rocket-science.com)
+ * @version 1.0 *
+ */
+public class GridUtil implements Serializable {
+
+	private static final long serialVersionUID = 7968142183111635414L;
 
 	/**
 	 * center align text within the GridCell

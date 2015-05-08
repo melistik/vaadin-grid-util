@@ -1,5 +1,6 @@
 package org.vaadin.gridutil.cell;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -51,7 +52,9 @@ import com.vaadin.ui.themes.ValoTheme;
  * @author Marten Prieß (http://www.non-rocket-science.com)
  * @version 1.0
  */
-public class GridCellFilter {
+public class GridCellFilter implements Serializable {
+
+	private static final long serialVersionUID = -6449115552660561941L;
 
 	private final Grid grid;
 	private HeaderRow filterHeaderRow;
@@ -272,6 +275,9 @@ public class GridCellFilter {
 				this.textField.setInputPrompt(inputPrompt);
 				this.textField.addStyleName(ValoTheme.TEXTFIELD_TINY);
 				this.textField.addTextChangeListener(new TextChangeListener() {
+
+					private static final long serialVersionUID = -3567212620627878001L;
+
 					@Override
 					public void textChange(final TextChangeEvent event) {
 						if (event.getText() != null && event.getText()
@@ -317,6 +323,8 @@ public class GridCellFilter {
 				this.comboBox.setContainerDataSource(container);
 				this.comboBox.addStyleName(ValoTheme.COMBOBOX_TINY);
 				this.comboBox.addValueChangeListener(new ValueChangeListener() {
+
+					private static final long serialVersionUID = 4657429154535483528L;
 
 					@Override
 					public void valueChange(final ValueChangeEvent event) {
@@ -380,6 +388,8 @@ public class GridCellFilter {
 				this.comboBox.setImmediate(true);
 				this.comboBox.addStyleName(ValoTheme.COMBOBOX_TINY);
 				this.comboBox.addValueChangeListener(new ValueChangeListener() {
+
+					private static final long serialVersionUID = 75672745825037750L;
 
 					@Override
 					public void valueChange(final ValueChangeEvent event) {
@@ -460,6 +470,8 @@ public class GridCellFilter {
 				field.addStyleName(ValoTheme.TEXTFIELD_TINY);
 				field.addValueChangeListener(new ValueChangeListener() {
 
+					private static final long serialVersionUID = -8404344833239596320L;
+
 					@Override
 					public void valueChange(final ValueChangeEvent event) {
 						try {
@@ -512,10 +524,13 @@ public class GridCellFilter {
 			private void initCommitHandler() {
 				getFieldGroup().addCommitHandler(new CommitHandler() {
 
+					private static final long serialVersionUID = -2912534421548359666L;
+
 					@Override
 					public void preCommit(final CommitEvent commitEvent) throws CommitException {
 					}
 
+					@SuppressWarnings("rawtypes")
 					@Override
 					public void postCommit(final CommitEvent commitEvent) throws CommitException {
 						Object smallestValue = getFieldGroup().getItemDataSource()
@@ -567,6 +582,8 @@ public class GridCellFilter {
 				dateField.addStyleName(ValoTheme.DATEFIELD_TINY);
 				dateField.addValueChangeListener(new ValueChangeListener() {
 
+					private static final long serialVersionUID = 9147606627660840906L;
+
 					@Override
 					public void valueChange(final ValueChangeEvent event) {
 						try {
@@ -599,6 +616,8 @@ public class GridCellFilter {
 
 			private void initCommitHandler() {
 				getFieldGroup().addCommitHandler(new CommitHandler() {
+
+					private static final long serialVersionUID = 2617591142986829655L;
 
 					@Override
 					public void preCommit(final CommitEvent commitEvent) throws CommitException {

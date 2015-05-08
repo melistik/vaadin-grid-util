@@ -14,6 +14,7 @@ import com.vaadin.ui.HorizontalLayout;
  */
 public abstract class RangeCellFilterComponent<C extends Component> extends CellFilterComponent<C> {
 
+	private static final long serialVersionUID = 1L;
 	private HorizontalLayout hLayout;
 	private FieldGroup fieldGroup;
 

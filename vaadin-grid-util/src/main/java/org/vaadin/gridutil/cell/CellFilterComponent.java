@@ -1,5 +1,7 @@
 package org.vaadin.gridutil.cell;
 
+import java.io.Serializable;
+
 import com.vaadin.ui.Component;
 
 /**
@@ -8,8 +10,9 @@ import com.vaadin.ui.Component;
  * @author Marten Prieß (http://www.non-rocket-science.com)
  * @version 1.0
  */
-public abstract class CellFilterComponent<C extends Component> {
+public abstract class CellFilterComponent<C extends Component> implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private C component;
 
 	public C getComponent() {
