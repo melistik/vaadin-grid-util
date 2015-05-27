@@ -340,7 +340,7 @@ public class DemoUI extends UI {
 				this.visibile = !this.visibile;
 				changeVisibility.setIcon(this.visibile ? FontAwesome.EYE_SLASH : FontAwesome.EYE);
 				DemoUI.this.filter.setVisible(this.visibile);
-				Notification.show("changed visibility to: " + this.visibile + " it has removed the header row!");
+				Notification.show("changed visibility to: " + this.visibile + "! Sometimes it's working sometimes not - it's deprecated!", Type.ERROR_MESSAGE);
 			}
 		});
 		changeVisibility.setIcon(FontAwesome.EYE_SLASH);
