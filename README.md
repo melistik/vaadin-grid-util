@@ -6,9 +6,18 @@ A Toolkit that simplify the use of the Grid and add missing features.
 ![screenshot](assets/screenshot.jpg)
 
 - introduce a easy way to build a filterrow
-- adds renderers that allows to display a combination of button and value within one cell (missing edit/delete button)
+- add renderers that allows to display a combination of button and value within one cell (missing edit/delete button)
 - shorten the lines of code for writing StringConverter
 - add missing css-settings for cell alignment
+
+The GridCellFilter-Component contains filters for the following types:
+- String
+- Date
+- Number (checks if Integer, Long, Double...)
+- Objects / Enums (via ComboBox with Equals-Filter)
+- allows to add custom Filters and Components
+
+For detailed code-example please take a look in the github demo-application. There I've tried to structure my code so that you can understand the usage and the features...
 
 Workflow
 ========
