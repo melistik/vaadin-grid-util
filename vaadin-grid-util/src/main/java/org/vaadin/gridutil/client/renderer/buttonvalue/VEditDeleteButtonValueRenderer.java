@@ -9,7 +9,7 @@ package org.vaadin.gridutil.client.renderer.buttonvalue;
 public class VEditDeleteButtonValueRenderer extends VButtonValueRenderer {
 
 	public VEditDeleteButtonValueRenderer() {
-		super(true, true);
+		super(VButtonValueRenderer.EDIT_BITM | VButtonValueRenderer.DELETE_BITM);
 	}
 
 }

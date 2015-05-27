@@ -45,7 +45,7 @@ public abstract class AbstractButtonValueConnector<W extends VButtonValueRendere
 			public void onClick(final RendererClickEvent<JsonObject> event) {
 				MouseEventDetails details = MouseEventDetailsBuilder.buildMouseEventDetails(event.getNativeEvent());
 				// get relativeX from Widget itself
-				details.setRelativeX(getRenderer().isFirstButtonClicked() ? 0 : 10);
+				details.setRelativeX(getRenderer().getClickedBITM());
 
 				getRpcProxy(RendererClickRpc.class).click(getRowKey(event.getCell()
 						.getRow()), getColumnId(event.getCell()

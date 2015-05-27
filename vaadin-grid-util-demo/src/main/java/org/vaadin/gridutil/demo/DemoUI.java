@@ -19,8 +19,8 @@ import org.vaadin.gridutil.demo.data.DummyDataGen;
 import org.vaadin.gridutil.demo.data.Inhabitants;
 import org.vaadin.gridutil.renderer.BooleanRenderer;
 import org.vaadin.gridutil.renderer.DeleteButtonValueRenderer;
-import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
-import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer.EditDeleteButtonClickListener;
+import org.vaadin.gridutil.renderer.ViewEditDeleteButtonValueRenderer;
+import org.vaadin.gridutil.renderer.ViewEditDeleteButtonValueRenderer.ViewEditDeleteButtonClickListener;
 
 import com.google.gwt.i18n.server.testing.Gender;
 import com.vaadin.annotations.Theme;
@@ -112,7 +112,13 @@ public class DemoUI extends UI {
 
 	private void setColumnRenderes(final Grid grid) {
 		grid.getColumn("id")
-				.setRenderer(new EditDeleteButtonValueRenderer(new EditDeleteButtonClickListener() {
+				.setRenderer(new ViewEditDeleteButtonValueRenderer(new ViewEditDeleteButtonClickListener() {
+
+					@Override
+					public void onView(final RendererClickEvent event) {
+						Notification.show(event.getItemId()
+								.toString() + " want's to get viewed", Type.HUMANIZED_MESSAGE);
+					}
 
 					@Override
 					public void onEdit(final RendererClickEvent event) {
@@ -121,13 +127,13 @@ public class DemoUI extends UI {
 					}
 
 					@Override
-					public void onDelete(final com.vaadin.ui.renderers.ClickableRenderer.RendererClickEvent event) {
+					public void onDelete(final RendererClickEvent event) {
 						Notification.show(event.getItemId()
-								.toString() + " want's to get delete", Type.WARNING_MESSAGE);
-					};
-
+								.toString() + " want's to get deleted", Type.WARNING_MESSAGE);
+					}
 				}))
-				.setWidth(150);
+				.setWidth(160);
+
 		grid.getColumn("bodySize")
 				.setWidth(150);
 		grid.getColumn("birthday")
@@ -142,7 +148,8 @@ public class DemoUI extends UI {
 
 					@Override
 					public void click(final RendererClickEvent event) {
-						Notification.show("country shoud get deleted in line: " + ((Inhabitants) event.getItemId()).getId(), Type.ERROR_MESSAGE);
+						Notification.show("country shoud get deleted for: " + event.getItemId()
+								.toString(), Type.ERROR_MESSAGE);
 					}
 				}), new SimpleStringConverter<Country>(Country.class) {
 

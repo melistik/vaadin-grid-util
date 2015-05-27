@@ -5,17 +5,25 @@ import org.vaadin.gridutil.client.renderer.buttonvalue.VButtonValueRenderer;
 import com.vaadin.ui.renderers.ClickableRenderer;
 
 /**
- * Add an edit and delete buttons next to the value (value is rendered as HTML)
+ * Add view, edit and delete buttons next to the value (value is rendered as HTML)
  *
  * @author Marten Prieß (http://www.non-rocket-science.com)
  * @version 1.0
  */
-public class EditDeleteButtonValueRenderer extends ClickableRenderer<String> {
+public class ViewEditDeleteButtonValueRenderer extends ClickableRenderer<String> {
 
 	/**
 	 * specify the {@link RendererClickListener} by a hint which Button is clicked
 	 */
-	public interface EditDeleteButtonClickListener {
+	public interface ViewEditDeleteButtonClickListener {
+
+		/**
+		 * get fired when viewButton is clicked
+		 * 
+		 * @param event
+		 *            clickEvent
+		 */
+		void onView(final RendererClickEvent event);
 
 		/**
 		 * get fired when editButton is clicked
@@ -35,15 +43,15 @@ public class EditDeleteButtonValueRenderer extends ClickableRenderer<String> {
 
 	}
 
-	private final EditDeleteButtonClickListener listener;
+	private final ViewEditDeleteButtonClickListener listener;
 
 	/**
-	 * "injects" a delete button in the cell
+	 * "injects" view, edit and delete buttons in the cell
 	 * 
 	 * @param listener
 	 *            that get triggered on click on both buttons
 	 */
-	public EditDeleteButtonValueRenderer(final EditDeleteButtonClickListener listener) {
+	public ViewEditDeleteButtonValueRenderer(final ViewEditDeleteButtonClickListener listener) {
 		super(String.class);
 		this.listener = listener;
 
@@ -51,7 +59,9 @@ public class EditDeleteButtonValueRenderer extends ClickableRenderer<String> {
 
 			@Override
 			public void click(final com.vaadin.ui.renderers.ClickableRenderer.RendererClickEvent event) {
-				if (event.getRelativeX() == VButtonValueRenderer.EDIT_BITM) {
+				if (event.getRelativeX() == VButtonValueRenderer.VIEW_BITM) {
+					listener.onView(event);
+				} else if (event.getRelativeX() == VButtonValueRenderer.EDIT_BITM) {
 					listener.onEdit(event);
 				} else {
 					listener.onDelete(event);

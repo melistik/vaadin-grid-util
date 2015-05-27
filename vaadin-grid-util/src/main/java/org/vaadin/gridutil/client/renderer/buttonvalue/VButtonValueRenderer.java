@@ -18,13 +18,44 @@ import com.vaadin.client.widget.grid.RendererCellReference;
 public class VButtonValueRenderer extends ClickableRenderer<String, FlowPanel> {
 
 	private static String STYLE_NAME = "v-button-value-cell";
-	private boolean firstButtonClicked = true;
-	private final boolean editBtn, deleteBtn;
 
-	public VButtonValueRenderer(final boolean editBtn, final boolean deleteBtn) {
+	public static final int VIEW_BITM = 4;
+	public static final int EDIT_BITM = 16;
+	public static final int DELETE_BITM = 32;
+
+	private int clickedBITM = 0;
+	private final int buttonBITM;
+
+	public VButtonValueRenderer(final int buttonBITM) {
 		super();
-		this.editBtn = editBtn;
-		this.deleteBtn = deleteBtn;
+		this.buttonBITM = buttonBITM;
+	}
+
+	private Button genButton(final int bitm) {
+		Button btn = GWT.create(Button.class);
+		btn.setStylePrimaryName("v-nativebutton");
+		switch (bitm) {
+			case VIEW_BITM:
+				btn.addStyleName("v-view");
+				break;
+			case EDIT_BITM:
+				btn.addStyleName("v-edit");
+				break;
+			case DELETE_BITM:
+				btn.addStyleName("v-delete");
+				break;
+
+		}
+		btn.setHTML("<span></span>");
+		btn.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(final ClickEvent event) {
+				VButtonValueRenderer.this.clickedBITM = bitm;
+				VButtonValueRenderer.super.onClick(event);
+			}
+		});
+		return btn;
 	}
 
 	/**
@@ -36,41 +67,28 @@ public class VButtonValueRenderer extends ClickableRenderer<String, FlowPanel> {
 		FlowPanel buttonBar = GWT.create(FlowPanel.class);
 		buttonBar.setStylePrimaryName("v-button-bar");
 
-		if (this.editBtn) {
-			Button editBtn = GWT.create(Button.class);
-			editBtn.setStylePrimaryName("v-nativebutton");
-			editBtn.addStyleName("v-edit");
-			editBtn.setHTML("<span></span>");
-			editBtn.addClickHandler(new ClickHandler() {
-
-				@Override
-				public void onClick(final ClickEvent event) {
-					VButtonValueRenderer.this.firstButtonClicked = true;
-					VButtonValueRenderer.super.onClick(event);
-				}
-			});
-			buttonBar.add(editBtn);
+		int buttonsAdded = 0;
+		if ((this.buttonBITM & VIEW_BITM) != 0) {
+			buttonBar.add(genButton(VIEW_BITM));
+			buttonsAdded++;
 		}
-		if (this.deleteBtn) {
-			Button deleteBtn = GWT.create(Button.class);
-			deleteBtn.setStylePrimaryName("v-nativebutton");
-			deleteBtn.addStyleName("v-delete");
-			deleteBtn.setHTML("<span></span>");
-			deleteBtn.addClickHandler(new ClickHandler() {
-
-				@Override
-				public void onClick(final ClickEvent event) {
-					VButtonValueRenderer.this.firstButtonClicked = false;
-					VButtonValueRenderer.super.onClick(event);
-				}
-			});
-			buttonBar.add(deleteBtn);
+		if ((this.buttonBITM & EDIT_BITM) != 0) {
+			buttonBar.add(genButton(EDIT_BITM));
+			buttonsAdded++;
+		}
+		if ((this.buttonBITM & DELETE_BITM) != 0) {
+			buttonBar.add(genButton(DELETE_BITM));
+			buttonsAdded++;
 		}
 
 		FlowPanel panel = GWT.create(FlowPanel.class);
 		panel.setStylePrimaryName(STYLE_NAME);
-		if (this.editBtn && this.deleteBtn) {
+		if (buttonsAdded == 3) {
+			panel.addStyleName("three-buttons");
+		} else if (buttonsAdded == 2) {
 			panel.addStyleName("two-buttons");
+		} else {
+			panel.addStyleName("one-button");
 		}
 		panel.add(buttonBar);
 
@@ -80,8 +98,8 @@ public class VButtonValueRenderer extends ClickableRenderer<String, FlowPanel> {
 		return panel;
 	}
 
-	public boolean isFirstButtonClicked() {
-		return this.firstButtonClicked;
+	public int getClickedBITM() {
+		return this.clickedBITM;
 	}
 
 	@Override
