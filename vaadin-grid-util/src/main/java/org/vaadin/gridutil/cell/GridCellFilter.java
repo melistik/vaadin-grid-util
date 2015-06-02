@@ -58,8 +58,8 @@ public class GridCellFilter implements Serializable {
 
 	private final Grid grid;
 	private HeaderRow filterHeaderRow;
-	private final Map<String, CellFilterComponent<?>> cellFilters;
-	private final Map<String, Filter> assignedFilters;
+	private final Map<Object, CellFilterComponent<?>> cellFilters;
+	private final Map<Object, Filter> assignedFilters;
 	private final List<CellFilterChangedListener> cellFilterChangedListeners;
 	private boolean visible = true;
 
@@ -74,8 +74,8 @@ public class GridCellFilter implements Serializable {
 	public GridCellFilter(final Grid grid) {
 		this.grid = grid;
 		this.filterHeaderRow = grid.appendHeaderRow();
-		this.cellFilters = new HashMap<String, CellFilterComponent<?>>();
-		this.assignedFilters = new HashMap<String, Filter>();
+		this.cellFilters = new HashMap<Object, CellFilterComponent<?>>();
+		this.assignedFilters = new HashMap<Object, Filter>();
 		this.cellFilterChangedListeners = new ArrayList<CellFilterChangedListener>();
 	}
 
@@ -94,12 +94,12 @@ public class GridCellFilter implements Serializable {
 			if (visibile) {
 				this.filterHeaderRow = this.grid.appendHeaderRow();
 
-				for (Entry<String, CellFilterComponent<?>> entry : this.cellFilters.entrySet()) {
+				for (Entry<Object, CellFilterComponent<?>> entry : this.cellFilters.entrySet()) {
 					handleFilterRow(entry.getKey(), entry.getValue());
 				}
 			} else {
 				clearAllFilters();
-				for (Entry<String, CellFilterComponent<?>> entry : this.cellFilters.entrySet()) {
+				for (Entry<Object, CellFilterComponent<?>> entry : this.cellFilters.entrySet()) {
 					this.filterHeaderRow.getCell(entry.getKey())
 							.setText("");
 				}
@@ -123,7 +123,7 @@ public class GridCellFilter implements Serializable {
 	 * 
 	 * @return id of all properties that are currently filtered
 	 */
-	public Set<String> filteredColumnIds() {
+	public Set<Object> filteredColumnIds() {
 		return this.assignedFilters.keySet();
 	}
 
@@ -161,7 +161,7 @@ public class GridCellFilter implements Serializable {
 	 * removes all filters and clear all inputs
 	 */
 	public void clearAllFilters() {
-		for (Entry<String, CellFilterComponent<?>> entry : this.cellFilters.entrySet()) {
+		for (Entry<Object, CellFilterComponent<?>> entry : this.cellFilters.entrySet()) {
 			entry.getValue()
 					.clearFilter();
 			removeFilter(entry.getKey(), false);
@@ -175,7 +175,7 @@ public class GridCellFilter implements Serializable {
 	 * @param columnId
 	 *            id of property
 	 */
-	public void clearFilter(final String columnId) {
+	public void clearFilter(final Object columnId) {
 		this.cellFilters.get(columnId)
 				.clearFilter();
 		removeFilter(columnId);
@@ -189,7 +189,7 @@ public class GridCellFilter implements Serializable {
 	 * @param cellFilter
 	 *            component will get added to filterRow
 	 */
-	private void handleFilterRow(final String columnId, final CellFilterComponent<?> cellFilter) {
+	private void handleFilterRow(final Object columnId, final CellFilterComponent<?> cellFilter) {
 		this.cellFilters.put(columnId, cellFilter);
 		cellFilter.getComponent()
 				.setWidth(100, Unit.PERCENTAGE);
@@ -207,7 +207,7 @@ public class GridCellFilter implements Serializable {
 	 * @param columnId
 	 *            id of property
 	 */
-	public void replaceFilter(final Filter filter, final String columnId) {
+	public void replaceFilter(final Filter filter, final Object columnId) {
 		Filterable f = (Filterable) this.grid.getContainerDataSource();
 		if (this.assignedFilters.containsKey(columnId)) {
 			f.removeContainerFilter(this.assignedFilters.get(columnId));
@@ -224,11 +224,11 @@ public class GridCellFilter implements Serializable {
 	 * @param columnId
 	 *            id of property
 	 */
-	public void removeFilter(final String columnId) {
+	public void removeFilter(final Object columnId) {
 		removeFilter(columnId, true);
 	}
 
-	private void removeFilter(final String columnId, final boolean notify) {
+	private void removeFilter(final Object columnId, final boolean notify) {
 		Filterable f = (Filterable) this.grid.getContainerDataSource();
 		if (this.assignedFilters.containsKey(columnId)) {
 			f.removeContainerFilter(this.assignedFilters.get(columnId));
@@ -248,7 +248,7 @@ public class GridCellFilter implements Serializable {
 	 *            that implements the interface
 	 * @return your created component that is linked with the GridCellFilter
 	 */
-	public CellFilterComponent setCustomFilter(final String columnId, final CellFilterComponent component) {
+	public CellFilterComponent setCustomFilter(final Object columnId, final CellFilterComponent component) {
 		handleFilterRow(columnId, component);
 		return component;
 	}
@@ -265,7 +265,7 @@ public class GridCellFilter implements Serializable {
 	 *            property of SimpleStringFilter
 	 * @return generated TextField
 	 */
-	public TextField setTextFilter(final String columnId, final boolean ignoreCase, final boolean onlyMatchPrefix) {
+	public TextField setTextFilter(final Object columnId, final boolean ignoreCase, final boolean onlyMatchPrefix) {
 		return this.setTextFilter(columnId, ignoreCase, onlyMatchPrefix, null);
 	}
 
@@ -283,7 +283,7 @@ public class GridCellFilter implements Serializable {
 	 *            hint for user
 	 * @return generated TextField
 	 */
-	public TextField setTextFilter(final String columnId, final boolean ignoreCase, final boolean onlyMatchPrefix, final String inputPrompt) {
+	public TextField setTextFilter(final Object columnId, final boolean ignoreCase, final boolean onlyMatchPrefix, final String inputPrompt) {
 		CellFilterComponent<TextField> filter = new CellFilterComponent<TextField>() {
 
 			private static final long serialVersionUID = 1L;
@@ -329,7 +329,7 @@ public class GridCellFilter implements Serializable {
 	 *            selection for ComboBox
 	 * @return drawn comboBox in order to add some custom styles
 	 */
-	public ComboBox setComboBoxFilter(final String columnId, final List list) {
+	public ComboBox setComboBoxFilter(final Object columnId, final List list) {
 		CellFilterComponent<ComboBox> filter = new CellFilterComponent<ComboBox>() {
 
 			private static final long serialVersionUID = 1L;
@@ -377,7 +377,7 @@ public class GridCellFilter implements Serializable {
 	 *            id of property
 	 * @return drawn comboBox in order to add some custom styles
 	 */
-	public ComboBox setBooleanFilter(final String columnId) {
+	public ComboBox setBooleanFilter(final Object columnId) {
 		CellFilterComponent<ComboBox> filter = new CellFilterComponent<ComboBox>() {
 
 			private static final long serialVersionUID = 1L;
@@ -446,7 +446,7 @@ public class GridCellFilter implements Serializable {
 	 *            id of property
 	 * @return FieldGroup that holds both TextFields (smallest and biggest as propertyId)
 	 */
-	public FieldGroup setNumberFilter(final String columnId) {
+	public FieldGroup setNumberFilter(final Object columnId) {
 		return this.setNumberFilter(columnId, null, null);
 	}
 
@@ -462,7 +462,7 @@ public class GridCellFilter implements Serializable {
 	 *            hint for user
 	 * @return FieldGroup that holds both TextFields (smallest and biggest as propertyId)
 	 */
-	public FieldGroup setNumberFilter(final String columnId, final String smallestInputPrompt, final String biggestInputPrompt) {
+	public FieldGroup setNumberFilter(final Object columnId, final String smallestInputPrompt, final String biggestInputPrompt) {
 		final Class type = this.grid.getContainerDataSource()
 				.getType(columnId);
 		RangeCellFilterComponent<HorizontalLayout> filter = new RangeCellFilterComponent<HorizontalLayout>() {
@@ -597,7 +597,7 @@ public class GridCellFilter implements Serializable {
 	 *            id of property
 	 * @return FieldGroup that holds both TextFields (smallest and biggest as propertyId)
 	 */
-	public FieldGroup setDateFilter(final String columnId) {
+	public FieldGroup setDateFilter(final Object columnId) {
 		RangeCellFilterComponent<HorizontalLayout> filter = new RangeCellFilterComponent<HorizontalLayout>() {
 
 			/**
