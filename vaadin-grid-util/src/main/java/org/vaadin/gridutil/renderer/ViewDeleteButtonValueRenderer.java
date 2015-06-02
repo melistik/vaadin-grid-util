@@ -15,7 +15,7 @@ public class ViewDeleteButtonValueRenderer extends ClickableRenderer<String> {
 	/**
 	 * specify the {@link RendererClickListener} by a hint which Button is clicked
 	 */
-	public interface ViewEditDeleteButtonClickListener {
+	public interface ViewDeleteButtonClickListener {
 
 		/**
 		 * get fired when viewButton is clicked
@@ -24,14 +24,6 @@ public class ViewDeleteButtonValueRenderer extends ClickableRenderer<String> {
 		 *            clickEvent
 		 */
 		void onView(final RendererClickEvent event);
-
-		/**
-		 * get fired when editButton is clicked
-		 * 
-		 * @param event
-		 *            clickEvent
-		 */
-		void onEdit(final RendererClickEvent event);
 
 		/**
 		 * get fired when deleteButton is clicked
@@ -43,7 +35,7 @@ public class ViewDeleteButtonValueRenderer extends ClickableRenderer<String> {
 
 	}
 
-	private final ViewEditDeleteButtonClickListener listener;
+	private final ViewDeleteButtonClickListener listener;
 
 	/**
 	 * "injects" view, edit and delete buttons in the cell
@@ -51,7 +43,7 @@ public class ViewDeleteButtonValueRenderer extends ClickableRenderer<String> {
 	 * @param listener
 	 *            that get triggered on click on both buttons
 	 */
-	public ViewDeleteButtonValueRenderer(final ViewEditDeleteButtonClickListener listener) {
+	public ViewDeleteButtonValueRenderer(final ViewDeleteButtonClickListener listener) {
 		super(String.class);
 		this.listener = listener;
 
@@ -61,8 +53,6 @@ public class ViewDeleteButtonValueRenderer extends ClickableRenderer<String> {
 			public void click(final com.vaadin.ui.renderers.ClickableRenderer.RendererClickEvent event) {
 				if (event.getRelativeX() == VButtonValueRenderer.VIEW_BITM) {
 					listener.onView(event);
-				} else if (event.getRelativeX() == VButtonValueRenderer.EDIT_BITM) {
-					listener.onEdit(event);
 				} else {
 					listener.onDelete(event);
 				}
