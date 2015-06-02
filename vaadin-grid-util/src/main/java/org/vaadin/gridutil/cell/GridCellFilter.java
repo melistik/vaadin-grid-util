@@ -100,8 +100,10 @@ public class GridCellFilter implements Serializable {
 			} else {
 				clearAllFilters();
 				for (Entry<Object, CellFilterComponent<?>> entry : this.cellFilters.entrySet()) {
-					this.filterHeaderRow.getCell(entry.getKey())
-							.setText("");
+					if (null != this.filterHeaderRow.getCell(entry.getKey())) {
+						this.filterHeaderRow.getCell(entry.getKey())
+								.setText("");
+					}
 				}
 				this.grid.removeHeaderRow(this.filterHeaderRow);
 			}
@@ -193,10 +195,12 @@ public class GridCellFilter implements Serializable {
 		this.cellFilters.put(columnId, cellFilter);
 		cellFilter.getComponent()
 				.setWidth(100, Unit.PERCENTAGE);
-		this.filterHeaderRow.getCell(columnId)
-				.setComponent(cellFilter.getComponent());
-		this.filterHeaderRow.getCell(columnId)
-				.setStyleName("filter-header");
+		if(null != this.filterHeaderRow.getCell(columnId)) {
+			this.filterHeaderRow.getCell(columnId)
+					.setComponent(cellFilter.getComponent());
+			this.filterHeaderRow.getCell(columnId)
+					.setStyleName("filter-header");
+		}
 	}
 
 	/**
