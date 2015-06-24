@@ -1,0 +1,96 @@
+/* --------- boolean renderer --------- */
+.v-grid-cell-boolean {
+	font-family: FontAwesome;
+	font-style: normal;
+	font-weight: normal;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	display: inline-block;
+	line-height: 37px;
+	text-align: center;
+}
+.v-grid-cell-boolean.boolean-true:before {
+	content: "\f14a";
+}
+.v-grid-cell-boolean.boolean-false:before {
+	content: "\f00d";
+}
+.v-grid-cell-boolean.boolean-null:before {
+	content: "\f096";
+}
+
+/* fix for reindeer theme */
+.reindeer .v-grid-cell-boolean {
+	line-height: 20px;
+}
+
+
+/* --------- button value renderer --------- */
+.v-button-value-cell {
+	clear: both;
+	position: relative;
+	width: 100%;
+}
+.v-button-value-cell .v-button-bar {
+	position: absolute;
+	left: -4px;
+	top: -4px;
+	display: inline-block;
+	text-align: center;
+}
+.v-button-value-cell .v-button-bar button {
+	cursor: pointer;
+	width: 30px;
+	height: 30px;
+	font-family: FontAwesome !important;
+	font-style: normal;
+	font-weight: normal;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	margin-right: 2px;
+}
+.v-button-value-cell .v-button-bar button.v-view span:before {
+	content:  "\f06e";
+}
+.v-button-value-cell .v-button-bar button.v-edit span:before {
+	content:  "\f040";
+}
+.v-button-value-cell .v-button-bar button.v-delete span:before {
+	content: "\f014";
+}
+.v-button-value-cell .v-cell-value {
+	padding-left: 32px;
+}
+.v-button-value-cell.two-buttons .v-cell-value {
+	padding-left: 65px;
+}
+.v-button-value-cell.three-buttons .v-cell-value {
+	padding-left: 98px;
+}
+
+/* fix for reindeer theme */
+.reindeer .v-button-value-cell .v-button-bar button {
+	width: 20px;
+	height: 20px;
+}
+.reindeer .v-button-value-cell .v-cell-value {
+	padding-left: 22px;
+}
+.reindeer .v-button-value-cell.two-buttons .v-cell-value {
+	padding-left: 45px;
+}
+.reindeer .v-button-value-cell.three-buttons .v-cell-value {
+	padding-left: 68px;
+}
+.reindeer .v-button-bar button span {
+  margin: 0 0 0 -3px;
+}
+
+
+/* --------- grid cell alignment --------- */
+.v-grid-cell.centeralign {
+	text-align: center;
+}
+.v-grid-cell.rightalign {
+	text-align: right;
+}
