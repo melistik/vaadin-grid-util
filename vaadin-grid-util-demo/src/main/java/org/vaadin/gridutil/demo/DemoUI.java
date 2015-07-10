@@ -18,11 +18,11 @@ import org.vaadin.gridutil.demo.data.Country.Continent;
 import org.vaadin.gridutil.demo.data.DummyDataGen;
 import org.vaadin.gridutil.demo.data.Inhabitants;
 import org.vaadin.gridutil.renderer.BooleanRenderer;
-import org.vaadin.gridutil.renderer.DeleteButtonValueRenderer;
-import org.vaadin.gridutil.renderer.ViewEditDeleteButtonValueRenderer;
-import org.vaadin.gridutil.renderer.ViewEditDeleteButtonValueRenderer.ViewEditDeleteButtonClickListener;
+import org.vaadin.gridutil.renderer.EditButtonValueRenderer;
+import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
 
 import com.google.gwt.i18n.server.testing.Gender;
+import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -59,6 +59,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @Theme("valo")
 @Title("GridUtil")
+@StyleSheet("style.css")
 @SuppressWarnings("serial")
 public class DemoUI extends UI {
 
@@ -112,13 +113,7 @@ public class DemoUI extends UI {
 
 	private void setColumnRenderes(final Grid grid) {
 		grid.getColumn("id")
-				.setRenderer(new ViewEditDeleteButtonValueRenderer(new ViewEditDeleteButtonClickListener() {
-
-					@Override
-					public void onView(final RendererClickEvent event) {
-						Notification.show(event.getItemId()
-								.toString() + " want's to get viewed", Type.HUMANIZED_MESSAGE);
-					}
+				.setRenderer(new EditDeleteButtonValueRenderer(new EditDeleteButtonValueRenderer.EditDeleteButtonClickListener() {
 
 					@Override
 					public void onEdit(final RendererClickEvent event) {
@@ -143,13 +138,16 @@ public class DemoUI extends UI {
 				.setRenderer(new BooleanRenderer())
 				.setWidth(130);
 
+		/*
+		 * the icon of the editButton will get overwritten below by css styling @see DemoUI.initColumnAlignments
+		 */
 		grid.getColumn("country")
-				.setRenderer(new DeleteButtonValueRenderer(new RendererClickListener() {
+				.setRenderer(new EditButtonValueRenderer(new RendererClickListener() {
 
 					@Override
 					public void click(final RendererClickEvent event) {
-						Notification.show("country shoud get deleted for: " + event.getItemId()
-								.toString(), Type.ERROR_MESSAGE);
+						Notification.show("Goto Link for " + ((Inhabitants) event.getItemId()).getCountry()
+								.getName(), Type.HUMANIZED_MESSAGE);
 					}
 				}), new SimpleStringConverter<Country>(Country.class) {
 
@@ -372,6 +370,19 @@ public class DemoUI extends UI {
 				} else if (cellReference.getPropertyId()
 						.equals("birthday")) {
 					return GridUtil.ALIGN_CELL_CENTER;
+				} else if (cellReference.getPropertyId()
+						.equals("country")) {
+					/*
+					 * example how to change the icon of the buttons
+					 *  
+					 * @formatter:off
+					 * .v-grid-cell.link-icon .v-button-bar button.v-edit span:before {
+					 *   color: blue; // recolor icon
+					 *   content: "\f0c1"; // content-code of FontAwesome that is served by vaadin!
+					 * }
+					 * @formatter:on
+					 */
+					return "link-icon";
 				} else {
 					return null;
 				}

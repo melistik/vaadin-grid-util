@@ -1,0 +1,4 @@
+.v-grid-cell.link-icon .v-button-bar button.v-edit span:before {
+  color: blue; /* recolor icon */
+  content: "\f0c1"; /* content-code of FontAwesome that is served by vaadin! */
+}

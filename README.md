@@ -105,6 +105,31 @@ grid.getColumn("id")
 
 A single edit *(EditButtonValueRenderer)* or delete *(DeleteButtonValueRenderer)* button renderer is also available.
 
+When you want to create your own icon button you can do so by overwriting the css of the button
+*Badfully you cannot set the styleName via the Renderer that's why you need to overwrite it...*
+
+```java
+// first of all you need to set a custom style to the column
+grid.setCellStyleGenerator(new CellStyleGenerator() {
+	@Override
+	public String getStyle(final CellReference cellReference) {
+		if (cellReference.getPropertyId()
+				.equals("country")) {
+			return "link-icon";
+		} else {
+			return null;
+		}
+	}
+});
+```
+```css
+// you need to add this stylesheet to your application
+.v-grid-cell.link-icon .v-button-bar button.v-edit span:before {
+  color: blue; /* recolor icon */
+  content: "\f0c1"; /* content-code of FontAwesome that is served by vaadin! */
+}
+```
+
 Further more a BooleanRenderer that will convert the values into FontAwesome Icons is included.
 
 Converter
