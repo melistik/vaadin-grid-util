@@ -94,3 +94,23 @@
 .v-grid-cell.rightalign {
 	text-align: right;
 }
+
+/* --------- indicator styling --------- */
+.v-grid-cell-indicator {
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	cursor: pointer;
+}
+.v-grid-cell-indicator span.green {
+	color: green;
+}
+.v-grid-cell-indicator span.red {
+	color: red;
+}
+.v-grid-cell-indicator span.black {
+	color: black;
+}
+.v-grid-cell-indicator span.na {
+	color: yellow;
+}

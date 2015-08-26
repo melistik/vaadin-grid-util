@@ -1,44 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
 	
-	<groupId>org.vaadin.addons</groupId>
+	<parent>
+		<groupId>org.vaadin.addons</groupId>
+		<artifactId>vaadin-grid-util-root</artifactId>
+		<version>1.0.8-SNAPSHOT</version>
+	</parent>
+	
+	<modelVersion>4.0.0</modelVersion>
 	<artifactId>vaadin-grid-util-demo</artifactId>
 	<packaging>war</packaging>
-	<version>1.0.8-SNAPSHOT</version>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<vaadin.version>7.4.6</vaadin.version>
-		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
-	</properties>
-
-    <!--     
-	<organization>
-		<name>My Name</name>
-		<url>https://github.com/mygithubaccount/MyComponent/</url>
-	</organization>
-    
-	<scm>
-		<url>git://github.com/mygithubaccount/MyComponent.git</url>
-		<connection>scm:git:git://github.com/mygithubaccount/MyComponent.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com:/mygithubaccount/${ComponentClassName}.git</developerConnection>
-		<tag>MyComponent add-on for Vaadin</tag>
-	</scm>
-
-	<issueManagement>
-		<system>GitHub</system>
-		<url>https://github.com/mygithubaccount/MyComponent/issues</url>
-	</issueManagement>
-    -->
-
-	<licenses>
-		<license>
-			<name>Apache 2</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
 
 	<repositories>
 		<repository>
@@ -166,7 +137,7 @@
 			<plugin>
 				<groupId>com.vaadin</groupId>
 				<artifactId>vaadin-maven-plugin</artifactId>
-				<version>${vaadin.plugin.version}</version>
+				<version>${vaadin.version}</version>
 				<configuration>
 					<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
 					<webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets</webappDirectory>

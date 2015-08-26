@@ -20,6 +20,7 @@ import org.vaadin.gridutil.demo.data.Inhabitants;
 import org.vaadin.gridutil.renderer.BooleanRenderer;
 import org.vaadin.gridutil.renderer.EditButtonValueRenderer;
 import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
+import org.vaadin.gridutil.renderer.IndicatorRenderer;
 
 import com.google.gwt.i18n.server.testing.Gender;
 import com.vaadin.annotations.StyleSheet;
@@ -130,6 +131,7 @@ public class DemoUI extends UI {
 				.setWidth(160);
 
 		grid.getColumn("bodySize")
+                .setRenderer(new IndicatorRenderer(1.8, 1.1))
 				.setWidth(150);
 		grid.getColumn("birthday")
 				.setRenderer(new DateRenderer(DateFormat.getDateInstance()))
