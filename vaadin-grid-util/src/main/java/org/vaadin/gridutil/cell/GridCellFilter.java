@@ -593,6 +593,7 @@ public class GridCellFilter implements Serializable {
 
 	private final static Date MIN_DATE_VALUE = new Date(0); // 1970-01-01 00:00:00
 	private final static Date MAX_DATE_VALUE = new Date(32503676399000L); // 2999-12-31 23:59:59
+	private final static long END_OF_THE_DAY = 24L * 60 * 60 * 1000 - 1;
 
 	/**
 	 * assign a <b>BetweenFilter</b> to grid for given columnId<br>
@@ -601,7 +602,7 @@ public class GridCellFilter implements Serializable {
 	 *            id of property
 	 * @return FieldGroup that holds both TextFields (smallest and biggest as propertyId)
 	 */
-	public FieldGroup setDateFilter(final Object columnId) {
+	public FieldGroup setDateFilter(final Object columnId, final boolean inclusive) {
 		RangeCellFilterComponent<HorizontalLayout> filter = new RangeCellFilterComponent<HorizontalLayout>() {
 
 			/**
@@ -670,6 +671,9 @@ public class GridCellFilter implements Serializable {
 								.getItemProperty("biggest")
 								.getValue();
 						if (smallestValue != null || biggestValue != null) {
+							if (inclusive) {
+								biggestValue = new Date(biggestValue.getTime() + END_OF_THE_DAY);
+							}
 							replaceFilter(new Between(columnId, smallestValue != null ? smallestValue : MIN_DATE_VALUE, biggestValue != null ? biggestValue
 									: MAX_DATE_VALUE), columnId);
 						} else {

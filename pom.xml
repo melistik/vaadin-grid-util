@@ -9,7 +9,6 @@
 
 	<modules>
 		<module>vaadin-grid-util</module>
-		<module>vaadin-grid-util-demo</module>
 	</modules>
 
     <developers>
