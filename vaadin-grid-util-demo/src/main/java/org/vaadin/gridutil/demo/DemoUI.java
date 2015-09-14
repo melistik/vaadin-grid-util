@@ -297,7 +297,7 @@ public class DemoUI extends UI {
 		// simple filters
 		this.filter.setTextFilter("name", true, true, "name starts with");
 		this.filter.setNumberFilter("bodySize", "smallest", "biggest");
-		this.filter.setDateFilter("birthday");
+		this.filter.setDateFilter("birthday",false);
 		this.filter.setBooleanFilter("onFacebook");
 
 		// set country combo with custom caption
