@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +40,7 @@ import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.HeaderRow;
@@ -54,7 +56,9 @@ import com.vaadin.ui.themes.ValoTheme;
  */
 public class GridCellFilter implements Serializable {
 
-	private static final long serialVersionUID = -6449115552660561941L;
+	private static final String STYLENAME_GRIDCELLFILTER = "gridcellfilter";
+
+    private static final long serialVersionUID = -6449115552660561941L;
 
 	private final Grid grid;
 	private HeaderRow filterHeaderRow;
@@ -297,6 +301,7 @@ public class GridCellFilter implements Serializable {
 			public TextField layoutComponent() {
 				this.textField.setImmediate(true);
 				this.textField.setInputPrompt(inputPrompt);
+                this.textField.addStyleName(STYLENAME_GRIDCELLFILTER);
 				this.textField.addStyleName(ValoTheme.TEXTFIELD_TINY);
 				this.textField.addTextChangeListener(new TextChangeListener() {
 
@@ -347,6 +352,7 @@ public class GridCellFilter implements Serializable {
 				this.comboBox.setNullSelectionAllowed(true);
 				this.comboBox.setImmediate(true);
 				this.comboBox.setContainerDataSource(container);
+                this.comboBox.addStyleName(STYLENAME_GRIDCELLFILTER);
 				this.comboBox.addStyleName(ValoTheme.COMBOBOX_TINY);
 				this.comboBox.addValueChangeListener(new ValueChangeListener() {
 
@@ -414,6 +420,7 @@ public class GridCellFilter implements Serializable {
 
 				this.comboBox.setNullSelectionAllowed(true);
 				this.comboBox.setImmediate(true);
+                this.comboBox.addStyleName(STYLENAME_GRIDCELLFILTER);
 				this.comboBox.addStyleName(ValoTheme.COMBOBOX_TINY);
 				this.comboBox.addValueChangeListener(new ValueChangeListener() {
 
@@ -499,6 +506,7 @@ public class GridCellFilter implements Serializable {
 				field.setNullSettingAllowed(true);
 				field.setNullRepresentation("");
 				field.setConverter(getConverter());
+                field.addStyleName(STYLENAME_GRIDCELLFILTER);
 				field.addStyleName(ValoTheme.TEXTFIELD_TINY);
 				field.addValueChangeListener(new ValueChangeListener() {
 
@@ -572,8 +580,12 @@ public class GridCellFilter implements Serializable {
 								.getItemProperty("biggest")
 								.getValue();
 						if (smallestValue != null || biggestValue != null) {
-							replaceFilter(new Between(columnId, (Comparable) (smallestValue != null ? smallestValue : getValue(false)),
-									(Comparable) (biggestValue != null ? biggestValue : getValue(true))), columnId);
+						    if (smallestValue != null && biggestValue != null && smallestValue.equals(biggestValue)) {
+						        replaceFilter(new Equal(columnId, smallestValue), columnId);
+						    } else {
+    							replaceFilter(new Between(columnId, (Comparable) (smallestValue != null ? smallestValue : getValue(false)),
+    									(Comparable) (biggestValue != null ? biggestValue : getValue(true))), columnId);
+						    }
 						} else {
 							removeFilter(columnId);
 						}
@@ -617,6 +629,7 @@ public class GridCellFilter implements Serializable {
 				dateField.setInvalidAllowed(false);
 				dateField.setInvalidCommitted(false);
 				dateField.setResolution(Resolution.DAY);
+				dateField.addStyleName(STYLENAME_GRIDCELLFILTER);
 				dateField.addStyleName(ValoTheme.DATEFIELD_TINY);
 				dateField.addValueChangeListener(new ValueChangeListener() {
 
@@ -660,6 +673,16 @@ public class GridCellFilter implements Serializable {
 					@Override
 					public void preCommit(final CommitEvent commitEvent) throws CommitException {
 					}
+					
+                    private Date fixTiming(Date date, boolean beginning) {
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(date);
+                        calendar.set(Calendar.MILLISECOND, beginning ? 0 : 999);
+                        calendar.set(Calendar.SECOND, beginning ? 0 : 99);
+                        calendar.set(Calendar.MINUTE, beginning ? 0 : 59);
+                        calendar.set(Calendar.HOUR, beginning ? 0 : 23);
+                        return calendar.getTime();
+                    }
 
 					@Override
 					public void postCommit(final CommitEvent commitEvent) throws CommitException {
@@ -670,12 +693,13 @@ public class GridCellFilter implements Serializable {
 								.getItemProperty("biggest")
 								.getValue();
 						if (smallestValue != null || biggestValue != null) {
-							replaceFilter(new Between(columnId, smallestValue != null ? smallestValue : MIN_DATE_VALUE, biggestValue != null ? biggestValue
-									: MAX_DATE_VALUE), columnId);
+	                            replaceFilter(new Between(columnId, smallestValue != null ? fixTiming(smallestValue, true) : MIN_DATE_VALUE, biggestValue != null ? fixTiming(biggestValue, false)
+	                                    : MAX_DATE_VALUE), columnId);
 						} else {
 							removeFilter(columnId);
 						}
 					}
+					
 				});
 			}
 

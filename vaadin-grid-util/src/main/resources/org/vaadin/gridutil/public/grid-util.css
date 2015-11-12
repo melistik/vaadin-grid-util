@@ -1,13 +1,13 @@
 /* --------- boolean renderer --------- */
-.v-grid-cell-boolean {
+.v-icon.v-grid-cell-boolean {
 	font-family: FontAwesome;
 	font-style: normal;
 	font-weight: normal;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	display: inline-block;
-	line-height: 37px;
 	text-align: center;
+	vertical-align: middle;
 }
 .v-grid-cell-boolean.boolean-true:before {
 	content: "\f14a";
@@ -19,9 +19,8 @@
 	content: "\f096";
 }
 
-/* fix for reindeer theme */
-.reindeer .v-grid-cell-boolean {
-	line-height: 20px;
+.v-grid-row .v-grid-cell center, .v-grid-row .v-grid-cell .v-icon.v-grid-cell-boolean {
+	line-height: inherit;
 }
 
 
@@ -101,6 +100,9 @@
 	height: 100%;
 	text-align: center;
 	cursor: pointer;
+}
+.v-grid-row .v-grid-cell .v-grid-cell-indicator {
+	line-height: inherit;
 }
 .v-grid-cell-indicator span.green {
 	color: green;

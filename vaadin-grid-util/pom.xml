@@ -1,49 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<groupId>org.vaadin.addons</groupId>
 	<artifactId>vaadin-grid-util</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0.8-SNAPSHOT</version>
 
 
-    <name>GridUtil</name>
-    <description>
+	<name>GridUtil</name>
+	<description>
         GridUtil that simplify the use of filtering and some useful custom renderes
     </description>
-    <url>https://github.com/melistik/vaadin-grid-util</url>
+	<url>https://github.com/melistik/vaadin-grid-util</url>
 
-    <developers>
-        <developer>
-            <name>Marten Prieß</name>
-            <email>info@non-rocket-science.com</email>
-            <organization>Non-Rocket-Science.com</organization>
-            <url>http://www.non-rocket-science.com</url>
-        </developer>
-    </developers>
-    
+	<developers>
+		<developer>
+			<name>Marten Prieß</name>
+			<email>info@non-rocket-science.com</email>
+			<organization>Non-Rocket-Science.com</organization>
+			<url>http://www.non-rocket-science.com</url>
+		</developer>
+	</developers>
+
 	<properties>
 		<vaadin.version>7.4.0</vaadin.version>
 		<project.source.version>1.6</project.source.version>
-        <project.target.version>1.6</project.target.version>
-        <project.encoding>UTF-8</project.encoding>
+		<project.target.version>1.6</project.target.version>
+		<project.encoding>UTF-8</project.encoding>
+		<maven.javadoc.failOnError>false</maven.javadoc.failOnError>
 
-        <!-- MANIFEST settings -->
-        <Implementation-Version>${project.version}</Implementation-Version>
-        <Implementation-Title>GridUtil</Implementation-Title>
-        <Implementation-Vendor>Marten Prieß</Implementation-Vendor>
-        <Vaadin-License-Title>The MIT License (MIT)</Vaadin-License-Title>
-        <Vaadin-Addon>${project.artifactId}-${project.version}.jar</Vaadin-Addon>
+		<!-- MANIFEST settings -->
+		<Implementation-Version>${project.version}</Implementation-Version>
+		<Implementation-Title>GridUtil</Implementation-Title>
+		<Implementation-Vendor>Marten Prieß</Implementation-Vendor>
+		<Vaadin-License-Title>The MIT License (MIT)</Vaadin-License-Title>
+		<Vaadin-Addon>${project.artifactId}-${project.version}.jar</Vaadin-Addon>
 	</properties>
 
-    <licenses>
-        <license>
-            <name>The MIT License (MIT)</name>
-            <url>http://opensource.org/licenses/MIT</url>
-        </license>
-    </licenses>
-    
+	<licenses>
+		<license>
+			<name>The MIT License (MIT)</name>
+			<url>http://opensource.org/licenses/MIT</url>
+		</license>
+	</licenses>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.vaadin</groupId>
@@ -59,59 +61,59 @@
 	</dependencies>
 
 	<build>
-    	<resources>
-            <resource>
-                <directory>src/main/java</directory>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
-        
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.2</version>
-                <configuration>
-                    <encoding>${project.encoding}</encoding>
+				<configuration>
+					<encoding>${project.encoding}</encoding>
 					<source>${project.source.version}</source>
 					<target>${project.target.version}</target>
 				</configuration>
 			</plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.7</version>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <id>default-bundle</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>manifest</goal>
-                        </goals>
-                        <configuration>
-                            <excludeDependencies>true</excludeDependencies>
-                            <instructions>
-                                <Import-Package>*</Import-Package>
-                                <Export-Package>org.vaadin.gridutil.*</Export-Package>
-                            </instructions>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.3.7</version>
+				<extensions>true</extensions>
+				<executions>
+					<execution>
+						<id>default-bundle</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>manifest</goal>
+						</goals>
+						<configuration>
+							<excludeDependencies>true</excludeDependencies>
+							<instructions>
+								<Import-Package>*</Import-Package>
+								<Export-Package>org.vaadin.gridutil.*</Export-Package>
+							</instructions>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.5</version>
-                <configuration>
-                    <archive>
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                        <index>true</index>
-                        <manifest>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                        </manifest>
+				<configuration>
+					<archive>
+						<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+						<index>true</index>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+						</manifest>
 						<manifestEntries>
 							<!-- Package format version - do not change -->
 							<Vaadin-Package-Version>1</Vaadin-Package-Version>
@@ -121,28 +123,14 @@
 					</archive>
 				</configuration>
 			</plugin>
-			
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.4</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9</version>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.4</version>
 				<executions>
 					<execution>
-						<id>attach-javadoc</id>
+						<id>attach-sources</id>
 						<goals>
 							<goal>jar</goal>
 						</goals>
@@ -151,25 +139,42 @@
 			</plugin>
 
 			<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.5.3</version>
-                <configuration>
-                    <finalName>${project.artifactId}</finalName>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <descriptors>
-                        <descriptor>assembly/assembly.xml</descriptor>
-                    </descriptors>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <phase>package</phase>
-                    </execution>
-                </executions>
-            </plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.2</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration> <!-- add this to disable checking -->
+							<additionalparam>-Xdoclint:none</additionalparam>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.5.3</version>
+				<configuration>
+					<finalName>${project.artifactId}</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
+					<descriptors>
+						<descriptor>assembly/assembly.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<phase>package</phase>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
