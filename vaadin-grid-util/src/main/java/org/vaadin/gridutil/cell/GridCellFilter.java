@@ -1,17 +1,5 @@
 package org.vaadin.gridutil.cell;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Container.Filterable;
 import com.vaadin.data.Item;
@@ -22,13 +10,7 @@ import com.vaadin.data.fieldgroup.FieldGroup.CommitEvent;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitHandler;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.converter.Converter;
-import com.vaadin.data.util.converter.StringToBigDecimalConverter;
-import com.vaadin.data.util.converter.StringToBigIntegerConverter;
-import com.vaadin.data.util.converter.StringToDoubleConverter;
-import com.vaadin.data.util.converter.StringToFloatConverter;
-import com.vaadin.data.util.converter.StringToIntegerConverter;
-import com.vaadin.data.util.converter.StringToLongConverter;
+import com.vaadin.data.util.converter.*;
 import com.vaadin.data.util.filter.Between;
 import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.data.util.filter.SimpleStringFilter;
@@ -39,14 +21,16 @@ import com.vaadin.server.FontIcon;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.DateField;
-import com.vaadin.ui.Grid;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Grid.HeaderRow;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.*;
+import java.util.Calendar;
+import java.util.Map.Entry;
 
 /**
  * GridCellFilter helper that has a bunch of different filtering types
@@ -71,7 +55,7 @@ public class GridCellFilter implements Serializable {
 	 * keeps link to Grid and added HeaderRow<br>
 	 * afterwards you need to set filter specification for each row<br>
 	 * please take care that your Container implements Filterable!
-	 * 
+	 *
 	 * @param grid
 	 *            that should get added a HeaderRow that this component will manage
 	 */
@@ -88,7 +72,7 @@ public class GridCellFilter implements Serializable {
 	 * badly the Connectors of the Cell-Components log an error message<br>
 	 * <i>Widget is still attached to the DOM after the connector ComboBoxConnector has been unregistered. Widget was removed</i><br>
 	 * that's why it deprecated. The grid itself has no feature for changing the visibility of a headerRow
-	 * 
+	 *
 	 * @param visibile
 	 *            should get displayed?
 	 */
@@ -117,7 +101,7 @@ public class GridCellFilter implements Serializable {
 
 	/**
 	 * generated HeaderRow
-	 * 
+	 *
 	 * @return added HeaderRow during intialization
 	 */
 	public HeaderRow getFilterRow() {
@@ -126,7 +110,7 @@ public class GridCellFilter implements Serializable {
 
 	/**
 	 * get list of filtered ColumnIds
-	 * 
+	 *
 	 * @return id of all properties that are currently filtered
 	 */
 	public Set<Object> filteredColumnIds() {
@@ -135,7 +119,7 @@ public class GridCellFilter implements Serializable {
 
 	/**
 	 * add a listener for filter changes
-	 * 
+	 *
 	 * @param listener
 	 *            that should get triggered on changes
 	 */
@@ -145,7 +129,7 @@ public class GridCellFilter implements Serializable {
 
 	/**
 	 * remove a listener for filter changes
-	 * 
+	 *
 	 * @param listener
 	 *            that should get removed
 	 * @return true when found and removed
@@ -177,7 +161,7 @@ public class GridCellFilter implements Serializable {
 
 	/**
 	 * clear's a specific filter by columnId
-	 * 
+	 *
 	 * @param columnId
 	 *            id of property
 	 */
@@ -189,7 +173,7 @@ public class GridCellFilter implements Serializable {
 
 	/**
 	 * link component to headerRow and take care for styling
-	 * 
+	 *
 	 * @param columnId
 	 *            id of property
 	 * @param cellFilter
@@ -209,7 +193,7 @@ public class GridCellFilter implements Serializable {
 
 	/**
 	 * checks assignedFilters replace already handled one and add new one
-	 * 
+	 *
 	 * @param filter
 	 *            container filter
 	 * @param columnId
@@ -228,7 +212,7 @@ public class GridCellFilter implements Serializable {
 
 	/**
 	 * remove the filter and notify listeners
-	 * 
+	 *
 	 * @param columnId
 	 *            id of property
 	 */
@@ -249,7 +233,7 @@ public class GridCellFilter implements Serializable {
 
 	/**
 	 * allows to add custom FilterComponents to the GridCellFilter
-	 * 
+	 *
 	 * @param columnId
 	 *            id of property
 	 * @param component
@@ -264,7 +248,7 @@ public class GridCellFilter implements Serializable {
 	/**
 	 * assign a <b>SimpleStringFilter</b> to grid for given columnId<br>
 	 * could also be used for NumberField when you would like to do filter by startWith for example
-	 * 
+	 *
 	 * @param columnId
 	 *            id of property
 	 * @param ignoreCase
@@ -280,7 +264,7 @@ public class GridCellFilter implements Serializable {
 	/**
 	 * assign a <b>SimpleStringFilter</b> to grid for given columnId<br>
 	 * could also be used for NumberField when you would like to do filter by startWith for example
-	 * 
+	 *
 	 * @param columnId
 	 *            id of property
 	 * @param ignoreCase
@@ -331,7 +315,7 @@ public class GridCellFilter implements Serializable {
 
 	/**
 	 * assign a <b>EqualFilter</b> to grid for given columnId
-	 * 
+	 *
 	 * @param columnId
 	 *            id of property
 	 * @param list
@@ -382,7 +366,7 @@ public class GridCellFilter implements Serializable {
 
 	/**
 	 * assign a <b>EqualFilter</b> to grid for given columnId
-	 * 
+	 *
 	 * @param columnId
 	 *            id of property
 	 * @return drawn comboBox in order to add some custom styles
@@ -452,7 +436,7 @@ public class GridCellFilter implements Serializable {
 	/**
 	 * assign a <b>BetweenFilter</b> to grid for given columnId<br>
 	 * only supports type of <b>Integer, Double, Float, BigInteger and BigDecimal</b>
-	 * 
+	 *
 	 * @param columnId
 	 *            id of property
 	 * @return FieldGroup that holds both TextFields (smallest and biggest as propertyId)
@@ -464,7 +448,7 @@ public class GridCellFilter implements Serializable {
 	/**
 	 * assign a <b>BetweenFilter</b> to grid for given columnId<br>
 	 * only supports type of <b>Integer, Double, Float, BigInteger and BigDecimal</b>
-	 * 
+	 *
 	 * @param columnId
 	 *            id of property
 	 * @param smallestInputPrompt
@@ -608,7 +592,7 @@ public class GridCellFilter implements Serializable {
 
 	/**
 	 * assign a <b>BetweenFilter</b> to grid for given columnId<br>
-	 * 
+	 *
 	 * @param columnId
 	 *            id of property
 	 * @return FieldGroup that holds both TextFields (smallest and biggest as propertyId)
@@ -617,7 +601,7 @@ public class GridCellFilter implements Serializable {
 		RangeCellFilterComponent<HorizontalLayout> filter = new RangeCellFilterComponent<HorizontalLayout>() {
 
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -673,12 +657,12 @@ public class GridCellFilter implements Serializable {
 					@Override
 					public void preCommit(final CommitEvent commitEvent) throws CommitException {
 					}
-					
+
                     private Date fixTiming(Date date, boolean beginning) {
                         Calendar calendar = Calendar.getInstance();
                         calendar.setTime(date);
                         calendar.set(Calendar.MILLISECOND, beginning ? 0 : 999);
-                        calendar.set(Calendar.SECOND, beginning ? 0 : 99);
+                        calendar.set(Calendar.SECOND, beginning ? 0 : 59);
                         calendar.set(Calendar.MINUTE, beginning ? 0 : 59);
                         calendar.set(Calendar.HOUR, beginning ? 0 : 23);
                         return calendar.getTime();
@@ -699,7 +683,7 @@ public class GridCellFilter implements Serializable {
 							removeFilter(columnId);
 						}
 					}
-					
+
 				});
 			}
 
