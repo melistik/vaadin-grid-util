@@ -95,8 +95,8 @@
 						<configuration>
 							<excludeDependencies>true</excludeDependencies>
 							<instructions>
-								<Import-Package>*</Import-Package>
-								<Export-Package>org.vaadin.gridutil.*</Export-Package>
+								<Import-Package>!com.google.gwt.*,!com.google.web.bindery.*,!com.vaadin.client.*,!elemental.json,*</Import-Package>
+								<Export-Package>org.vaadin.gridutil.*,!org.vaadin.gridutil.client.*</Export-Package>
 							</instructions>
 						</configuration>
 					</execution>
