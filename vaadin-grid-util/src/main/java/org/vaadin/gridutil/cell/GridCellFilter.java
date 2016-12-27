@@ -600,7 +600,7 @@ public class GridCellFilter implements Serializable {
 	 * @return FieldGroup that holds both TextFields (smallest and biggest as propertyId)
 	 */
 	public FieldGroup setDateFilter(final Object columnId) {
-		return setDateFilter(columnId, new SimpleDateFormat());
+		return setDateFilter(columnId, new SimpleDateFormat(), true);
 	}
 
 	/**
@@ -610,9 +610,11 @@ public class GridCellFilter implements Serializable {
 	 *            id of property
 	 * @param dateFormat
 	 *            the dateFormat to be used for the date fields.
+	 * @param inclusive
+	 * 			  biggest value until the end of the day (DAY + 23:59:59.999)
 	 * @return FieldGroup that holds both TextFields (smallest and biggest as propertyId)
 	 */
-	public FieldGroup setDateFilter(final Object columnId, final java.text.SimpleDateFormat dateFormat) {
+	public FieldGroup setDateFilter(final Object columnId, final java.text.SimpleDateFormat dateFormat, final boolean inclusive) {
 		RangeCellFilterComponent<HorizontalLayout> filter = new RangeCellFilterComponent<HorizontalLayout>() {
 
 			/**
@@ -693,7 +695,7 @@ public class GridCellFilter implements Serializable {
 								.getItemProperty("biggest")
 								.getValue();
 						if (smallestValue != null || biggestValue != null) {
-	                            replaceFilter(new Between(columnId, smallestValue != null ? fixTiming(smallestValue, true) : MIN_DATE_VALUE, biggestValue != null ? fixTiming(biggestValue, false)
+	                            replaceFilter(new Between(columnId, smallestValue != null ? fixTiming(smallestValue, true) : MIN_DATE_VALUE, biggestValue != null ? fixTiming(biggestValue, !inclusive)
 	                                    : MAX_DATE_VALUE), columnId);
 						} else {
 							removeFilter(columnId);
