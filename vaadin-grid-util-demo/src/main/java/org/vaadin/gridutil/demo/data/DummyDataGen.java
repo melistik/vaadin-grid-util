@@ -6,10 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.time.DateUtils;
-import org.apache.commons.lang.time.DateUtils;
 import org.vaadin.gridutil.demo.data.Country.Continent;
-
-import com.google.gwt.i18n.server.testing.Gender;
 
 public final class DummyDataGen {
 
@@ -25,9 +22,9 @@ public final class DummyDataGen {
 	}
 
 	public static final Inhabitants genInhabitant(final long id) {
-		Inhabitants inh = new Inhabitants(id, Math.random() > 0.5 ? Gender.FEMALE : Gender.MALE);
+		Inhabitants inh = new Inhabitants(id, Math.random() > 0.5 ? Inhabitants.Gender.FEMALE : Inhabitants.Gender.MALE);
 		if (inh.getGender()
-				.equals(Gender.MALE)) {
+				.equals(Inhabitants.Gender.MALE)) {
 			inh.setName(randomOfList(MALES));
 		} else {
 			inh.setName(randomOfList(FEMALES));

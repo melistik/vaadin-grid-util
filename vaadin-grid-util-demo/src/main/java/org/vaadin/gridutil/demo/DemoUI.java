@@ -1,6 +1,5 @@
 package org.vaadin.gridutil.demo;
 
-import com.google.gwt.i18n.server.testing.Gender;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.data.Container.Filter;
@@ -120,7 +119,7 @@ public class DemoUI extends UI {
                 .setWidth(130);
 
 		/*
-		 * the icon of the editButton will get overwritten below by css styling @see DemoUI.initColumnAlignments
+         * the icon of the editButton will get overwritten below by css styling @see DemoUI.initColumnAlignments
 		 */
         grid.getColumn("country")
                 .setRenderer(new EditButtonValueRenderer(new RendererClickListener() {
@@ -233,14 +232,14 @@ public class DemoUI extends UI {
         this.filter.setNumberFilter("id");
 
         // set gender Combo with custom icons
-        ComboBox genderCombo = this.filter.setComboBoxFilter("gender", Arrays.asList(Gender.MALE, Gender.FEMALE));
-        genderCombo.setItemIcon(Gender.MALE, FontAwesome.MALE);
-        genderCombo.setItemIcon(Gender.FEMALE, FontAwesome.FEMALE);
+        ComboBox genderCombo = this.filter.setComboBoxFilter("gender", Arrays.asList(Inhabitants.Gender.MALE, Inhabitants.Gender.FEMALE));
+        genderCombo.setItemIcon(Inhabitants.Gender.MALE, FontAwesome.MALE);
+        genderCombo.setItemIcon(Inhabitants.Gender.FEMALE, FontAwesome.FEMALE);
 
         // simple filters
         this.filter.setTextFilter("name", true, true, "name starts with");
         this.filter.setNumberFilter("bodySize", "smallest", "biggest");
-        this.filter.setDateFilter("birthday", new SimpleDateFormat("yyyy-MMM-dd"));
+        this.filter.setDateFilter("birthday", new SimpleDateFormat("yyyy-MMM-dd"), true);
         this.filter.setBooleanFilter("onFacebook");
 
         // set country combo with custom caption
@@ -317,7 +316,7 @@ public class DemoUI extends UI {
                     return GridUtil.ALIGN_CELL_CENTER;
                 } else if (cellReference.getPropertyId()
                         .equals("country")) {
-					/*
+                    /*
 					 * example how to change the icon of the buttons
 					 *
 					 * @formatter:off
@@ -327,13 +326,13 @@ public class DemoUI extends UI {
 					 * }
 					 * @formatter:on
 					 */
-					return "link-icon";
-				} else {
-					return null;
-				}
-			}
-		});
-	}
+                    return "link-icon";
+                } else {
+                    return null;
+                }
+            }
+        });
+    }
 
     /**
      * example of a custom Filter that filter's by a subpropertiy of an object
