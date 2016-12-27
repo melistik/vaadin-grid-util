@@ -41,6 +41,7 @@ import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
 import org.vaadin.gridutil.renderer.IndicatorRenderer;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.EnumSet;
@@ -239,7 +240,7 @@ public class DemoUI extends UI {
         // simple filters
         this.filter.setTextFilter("name", true, true, "name starts with");
         this.filter.setNumberFilter("bodySize", "smallest", "biggest");
-        this.filter.setDateFilter("birthday");
+        this.filter.setDateFilter("birthday", new SimpleDateFormat("yyyy-MMM-dd"));
         this.filter.setBooleanFilter("onFacebook");
 
         // set country combo with custom caption

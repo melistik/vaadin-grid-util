@@ -28,9 +28,11 @@ import com.vaadin.ui.themes.ValoTheme;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Calendar;
 import java.util.Map.Entry;
+
 
 /**
  * GridCellFilter helper that has a bunch of different filtering types
@@ -598,6 +600,19 @@ public class GridCellFilter implements Serializable {
 	 * @return FieldGroup that holds both TextFields (smallest and biggest as propertyId)
 	 */
 	public FieldGroup setDateFilter(final Object columnId) {
+		return setDateFilter(columnId, new SimpleDateFormat());
+	}
+
+	/**
+	 * assign a <b>BetweenFilter</b> to grid for given columnId<br>
+	 *
+	 * @param columnId
+	 *            id of property
+	 * @param dateFormat
+	 *            the dateFormat to be used for the date fields.
+	 * @return FieldGroup that holds both TextFields (smallest and biggest as propertyId)
+	 */
+	public FieldGroup setDateFilter(final Object columnId, final java.text.SimpleDateFormat dateFormat) {
 		RangeCellFilterComponent<HorizontalLayout> filter = new RangeCellFilterComponent<HorizontalLayout>() {
 
 			/**
@@ -608,6 +623,7 @@ public class GridCellFilter implements Serializable {
 			private DateField genDateField(final String propertyId) {
 				final DateField dateField = new DateField();
 				getFieldGroup().bind(dateField, propertyId);
+				dateField.setDateFormat(dateFormat.toPattern());
 				dateField.setWidth("100%");
 				dateField.setImmediate(true);
 				dateField.setInvalidAllowed(false);
