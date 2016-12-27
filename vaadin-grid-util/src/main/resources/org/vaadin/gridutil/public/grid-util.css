@@ -116,3 +116,13 @@
 .v-grid-cell-indicator span.na {
 	color: yellow;
 }
+
+
+/* --------- reindeer theme --------- */
+.reindeer.v-app .filter-header input.v-textfield.v-widget.tiny,
+.reindeer.v-app .filter-header .v-datefield-gridcellfilter.tiny .v-textfield,
+.reindeer.v-app .filter-header .v-datefield-gridcellfilter.tiny .v-datefield-button,
+.reindeer.v-app .filter-header .v-filterselect.tiny,
+.reindeer.v-app .filter-header input.v-filterselect-input {
+	height: 19px;
+}
