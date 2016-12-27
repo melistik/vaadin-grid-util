@@ -178,7 +178,7 @@ public class GridCellFilter implements Serializable {
      * @param columnId   id of property
      * @param cellFilter component will get added to filterRow
      */
-    private void handleFilterRow(final Object columnId, final CellFilterComponent<?> cellFilter) {
+    protected void handleFilterRow(final Object columnId, final CellFilterComponent<?> cellFilter) {
         this.cellFilters.put(columnId, cellFilter);
         cellFilter.getComponent()
                 .setWidth(100, Unit.PERCENTAGE);
@@ -216,7 +216,7 @@ public class GridCellFilter implements Serializable {
         removeFilter(columnId, true);
     }
 
-    private void removeFilter(final Object columnId, final boolean notify) {
+    protected void removeFilter(final Object columnId, final boolean notify) {
         Filterable f = (Filterable) this.grid.getContainerDataSource();
         if (this.assignedFilters.containsKey(columnId)) {
             f.removeContainerFilter(this.assignedFilters.get(columnId));
