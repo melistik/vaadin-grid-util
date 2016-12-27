@@ -66,6 +66,10 @@ public class GridCellFilter implements Serializable {
         this.cellFilters = new HashMap<Object, CellFilterComponent<?>>();
         this.assignedFilters = new HashMap<Object, Filter>();
         this.cellFilterChangedListeners = new ArrayList<CellFilterChangedListener>();
+
+        if (!(grid.getContainerDataSource() instanceof Filterable)) {
+            throw new RuntimeException("container is not Filterable!");
+        }
     }
 
     /**
