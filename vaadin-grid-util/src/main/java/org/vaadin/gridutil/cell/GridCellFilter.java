@@ -52,6 +52,7 @@ public class GridCellFilter implements Serializable {
     private final Map<Object, Filter> assignedFilters;
     private final List<CellFilterChangedListener> cellFilterChangedListeners;
     private boolean visible = true;
+    private Map<String, String> customMessages;
 
     /**
      * keeps link to Grid and added HeaderRow<br>
@@ -72,6 +73,10 @@ public class GridCellFilter implements Serializable {
         }
     }
 
+    public void setCustomMessages(Map<String, String> customMessages) {
+    	this.customMessages = customMessages;
+    }
+    
     /**
      * will remove or add the filterHeaderRow<br>
      * badly the Connectors of the Cell-Components log an error message<br>
@@ -361,14 +366,19 @@ public class GridCellFilter implements Serializable {
             private static final long serialVersionUID = 1L;
             ComboBox comboBox = new ComboBox();
 
-            private Item genItem(final Boolean value) {
+            private Item genItem(final Boolean value, String customText) {
                 Item item = this.comboBox.getItem(this.comboBox.addItem());
                 item.getItemProperty("icon")
                         .setValue(value ? FontAwesome.CHECK_SQUARE : FontAwesome.TIMES);
                 item.getItemProperty("value")
                         .setValue(value);
-                item.getItemProperty("caption")
-                        .setValue(value.toString());
+                if (customText == null) {
+                	item.getItemProperty("caption")
+                            .setValue(value.toString());
+                } else {
+                	item.getItemProperty("caption")
+                            .setValue(customText);
+                }
                 return item;
             }
 
@@ -383,9 +393,15 @@ public class GridCellFilter implements Serializable {
                 this.comboBox.setItemCaptionPropertyId("caption");
                 this.comboBox.setItemIconPropertyId("icon");
 
-                genItem(Boolean.TRUE);
-                genItem(Boolean.FALSE);
-
+                String trueCaption = null;
+                String falseCaption = null;
+                if (customMessages != null) {
+                	trueCaption = customMessages.get("trueCaption");
+                	falseCaption = customMessages.get("falseCaption");
+                }
+                genItem(Boolean.TRUE, trueCaption);
+                genItem(Boolean.FALSE, falseCaption);
+                
                 this.comboBox.setNullSelectionAllowed(true);
                 this.comboBox.setImmediate(true);
                 this.comboBox.addStyleName(STYLENAME_GRIDCELLFILTER);
