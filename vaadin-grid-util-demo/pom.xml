@@ -12,7 +12,7 @@
 
     <properties>
         <start-class>org.vaadin.gridutil.demo.Application</start-class>
-        <spring.boot.version>1.4.2.RELEASE</spring.boot.version>
+        <spring.boot.version>1.5.1.RELEASE</spring.boot.version>
         <!-- Important: Add the main class of your project -->
     </properties>
 
@@ -71,7 +71,7 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-spring-boot-starter</artifactId>
-            <version>1.1.0</version>
+            <version>1.2.0</version>
         </dependency>
 
         <dependency>
