@@ -9,6 +9,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinRequest;
@@ -239,7 +240,9 @@ public class DemoUI extends UI {
         // simple filters
         this.filter.setTextFilter("name", true, true, "name starts with");
         this.filter.setNumberFilter("bodySize", "smallest", "biggest");
-        this.filter.setDateFilter("birthday", new SimpleDateFormat("yyyy-MMM-dd"), true);
+        FieldGroup dateFieldGroup = this.filter.setDateFilter("birthday", new SimpleDateFormat("yyyy-MMM-dd"), true);
+        ((DateField) dateFieldGroup.getField(GridCellFilter.SMALLEST)).setParseErrorMessage("da ist was schief gegangen :)");
+
         this.filter.setBooleanFilter("onFacebook");
 
         // set country combo with custom caption
@@ -317,7 +320,7 @@ public class DemoUI extends UI {
                 } else if (cellReference.getPropertyId()
                         .equals("country")) {
                     /*
-					 * example how to change the icon of the buttons
+                     * example how to change the icon of the buttons
 					 *
 					 * @formatter:off
 					 * .v-grid-cell.link-icon .v-button-bar button.v-edit span:before {

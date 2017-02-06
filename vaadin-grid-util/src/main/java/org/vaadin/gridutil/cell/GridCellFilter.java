@@ -28,7 +28,6 @@ import com.vaadin.ui.themes.ValoTheme;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Calendar;
 import java.util.Map.Entry;
@@ -45,6 +44,8 @@ public class GridCellFilter implements Serializable {
     private static final String STYLENAME_GRIDCELLFILTER = "gridcellfilter";
 
     private static final long serialVersionUID = -6449115552660561941L;
+    public static final String SMALLEST = "smallest";
+    public static final String BIGGEST = "biggest";
 
     private final Grid grid;
     private HeaderRow filterHeaderRow;
@@ -494,9 +495,9 @@ public class GridCellFilter implements Serializable {
             public HorizontalLayout layoutComponent() {
                 getFieldGroup().setItemDataSource(genPropertysetItem(type));
 
-                TextField smallest = genNumberField("smallest");
+                TextField smallest = genNumberField(SMALLEST);
                 smallest.setInputPrompt(smallestInputPrompt);
-                TextField biggest = genNumberField("biggest");
+                TextField biggest = genNumberField(BIGGEST);
                 biggest.setInputPrompt(biggestInputPrompt);
                 getHLayout().addComponent(smallest);
                 getHLayout().addComponent(biggest);
@@ -538,10 +539,10 @@ public class GridCellFilter implements Serializable {
                     @Override
                     public void postCommit(final CommitEvent commitEvent) throws CommitException {
                         Object smallestValue = getFieldGroup().getItemDataSource()
-                                .getItemProperty("smallest")
+                                .getItemProperty(SMALLEST)
                                 .getValue();
                         Object biggestValue = getFieldGroup().getItemDataSource()
-                                .getItemProperty("biggest")
+                                .getItemProperty(BIGGEST)
                                 .getValue();
                         if (smallestValue != null || biggestValue != null) {
                             if (smallestValue != null && biggestValue != null && smallestValue.equals(biggestValue)) {
@@ -577,7 +578,7 @@ public class GridCellFilter implements Serializable {
      * @return FieldGroup that holds both TextFields (smallest and biggest as propertyId)
      */
     public FieldGroup setDateFilter(final Object columnId) {
-        return setDateFilter(columnId, new SimpleDateFormat(), true);
+        return setDateFilter(columnId, null, true);
     }
 
     /**
@@ -599,7 +600,9 @@ public class GridCellFilter implements Serializable {
             private DateField genDateField(final String propertyId) {
                 final DateField dateField = new DateField();
                 getFieldGroup().bind(dateField, propertyId);
-                dateField.setDateFormat(dateFormat.toPattern());
+                if (dateFormat != null) {
+                    dateField.setDateFormat(dateFormat.toPattern());
+                }
                 dateField.setWidth("100%");
                 dateField.setImmediate(true);
                 dateField.setInvalidAllowed(false);
@@ -629,8 +632,8 @@ public class GridCellFilter implements Serializable {
             public HorizontalLayout layoutComponent() {
                 getFieldGroup().setItemDataSource(genPropertysetItem(Date.class));
 
-                DateField smallest = genDateField("smallest");
-                DateField biggest = genDateField("biggest");
+                DateField smallest = genDateField(SMALLEST);
+                DateField biggest = genDateField(BIGGEST);
                 getHLayout().addComponent(smallest);
                 getHLayout().addComponent(biggest);
                 getHLayout().setExpandRatio(smallest, 1);
@@ -663,10 +666,10 @@ public class GridCellFilter implements Serializable {
                     @Override
                     public void postCommit(final CommitEvent commitEvent) throws CommitException {
                         Date smallestValue = (Date) getFieldGroup().getItemDataSource()
-                                .getItemProperty("smallest")
+                                .getItemProperty(SMALLEST)
                                 .getValue();
                         Date biggestValue = (Date) getFieldGroup().getItemDataSource()
-                                .getItemProperty("biggest")
+                                .getItemProperty(BIGGEST)
                                 .getValue();
                         if (smallestValue != null || biggestValue != null) {
                             replaceFilter(new Between(columnId, smallestValue != null ? fixTiming(smallestValue, true) : MIN_DATE_VALUE, biggestValue != null ? fixTiming(biggestValue, excludeEndOfDay)
