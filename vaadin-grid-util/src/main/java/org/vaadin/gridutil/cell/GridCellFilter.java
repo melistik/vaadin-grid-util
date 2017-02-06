@@ -350,6 +350,7 @@ public class GridCellFilter implements Serializable {
         return filter.getComponent();
     }
 
+
     /**
      * assign a <b>EqualFilter</b> to grid for given columnId
      *
@@ -357,19 +358,33 @@ public class GridCellFilter implements Serializable {
      * @return drawn comboBox in order to add some custom styles
      */
     public ComboBox setBooleanFilter(final Object columnId) {
+        return setBooleanFilter(columnId,
+                new BooleanRepresentation(FontAwesome.CHECK_SQUARE, Boolean.TRUE.toString()),
+                new BooleanRepresentation(FontAwesome.TIMES, Boolean.FALSE.toString()));
+    }
+
+    /**
+     * assign a <b>EqualFilter</b> to grid for given columnId
+     *
+     * @param columnId            id of property
+     * @param trueRepresentation  specify caption and icon
+     * @param falseRepresentation specify caption and icon
+     * @return drawn comboBox in order to add some custom styles
+     */
+    public ComboBox setBooleanFilter(final Object columnId, final BooleanRepresentation trueRepresentation, final BooleanRepresentation falseRepresentation) {
         CellFilterComponent<ComboBox> filter = new CellFilterComponent<ComboBox>() {
 
             private static final long serialVersionUID = 1L;
             ComboBox comboBox = new ComboBox();
 
-            private Item genItem(final Boolean value) {
+            private Item genItem(final Boolean value, BooleanRepresentation representation) {
                 Item item = this.comboBox.getItem(this.comboBox.addItem());
                 item.getItemProperty("icon")
-                        .setValue(value ? FontAwesome.CHECK_SQUARE : FontAwesome.TIMES);
+                    .setValue(representation.getIcon());
                 item.getItemProperty("value")
-                        .setValue(value);
+                    .setValue(value);
                 item.getItemProperty("caption")
-                        .setValue(value.toString());
+                    .setValue(representation.getCaption());
                 return item;
             }
 
@@ -384,8 +399,8 @@ public class GridCellFilter implements Serializable {
                 this.comboBox.setItemCaptionPropertyId("caption");
                 this.comboBox.setItemIconPropertyId("icon");
 
-                genItem(Boolean.TRUE);
-                genItem(Boolean.FALSE);
+                genItem(Boolean.TRUE, trueRepresentation);
+                genItem(Boolean.FALSE, falseRepresentation);
 
                 this.comboBox.setNullSelectionAllowed(true);
                 this.comboBox.setImmediate(true);
@@ -416,6 +431,24 @@ public class GridCellFilter implements Serializable {
 
         handleFilterRow(columnId, filter);
         return filter.getComponent();
+    }
+
+    public static class BooleanRepresentation {
+        private final FontIcon icon;
+        private final String caption;
+
+        public BooleanRepresentation(FontIcon icon, String caption) {
+            this.icon = icon;
+            this.caption = caption;
+        }
+
+        public FontIcon getIcon() {
+            return icon;
+        }
+
+        public String getCaption() {
+            return caption;
+        }
     }
 
     /**

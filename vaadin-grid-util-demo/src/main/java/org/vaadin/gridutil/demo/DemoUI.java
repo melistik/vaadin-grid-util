@@ -243,7 +243,9 @@ public class DemoUI extends UI {
         FieldGroup dateFieldGroup = this.filter.setDateFilter("birthday", new SimpleDateFormat("yyyy-MMM-dd"), true);
         ((DateField) dateFieldGroup.getField(GridCellFilter.SMALLEST)).setParseErrorMessage("da ist was schief gegangen :)");
 
-        this.filter.setBooleanFilter("onFacebook");
+        this.filter.setBooleanFilter("onFacebook",
+                new GridCellFilter.BooleanRepresentation(FontAwesome.THUMBS_UP, "yes"),
+                new GridCellFilter.BooleanRepresentation(FontAwesome.THUMBS_DOWN, "nope"));
 
         // set country combo with custom caption
         this.filter.setCustomFilter("country", customFilterComponent(this.filter, "country"));
