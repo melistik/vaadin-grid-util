@@ -1,14 +1,14 @@
 package org.vaadin.gridutil.cell;
 
-import java.io.Serializable;
-
 import com.vaadin.ui.Component;
+
+import java.io.Serializable;
 
 /**
  * Interface for each CellFilter in order to allow clear values
  *
  * @author Marten Prieß (http://www.non-rocket-science.com)
- * @version 1.0
+ * @version 1.1
  */
 public abstract class CellFilterComponent<C extends Component> implements Serializable {
 
@@ -21,6 +21,12 @@ public abstract class CellFilterComponent<C extends Component> implements Serial
 		}
 		return this.component;
 	}
+
+	/**
+	 * can be used to perform grid filterin<br>
+	 * useful when set filter value manually from outside
+	 */
+	public abstract void triggerUpdate();
 
 	/**
 	 * main component that is painted in the filterRow

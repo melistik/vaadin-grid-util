@@ -9,7 +9,6 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinRequest;
@@ -30,6 +29,7 @@ import org.vaadin.gridutil.GridUtil;
 import org.vaadin.gridutil.cell.CellFilterChangedListener;
 import org.vaadin.gridutil.cell.CellFilterComponent;
 import org.vaadin.gridutil.cell.GridCellFilter;
+import org.vaadin.gridutil.cell.RangeCellFilterComponent;
 import org.vaadin.gridutil.converter.SimpleStringConverter;
 import org.vaadin.gridutil.demo.data.Country;
 import org.vaadin.gridutil.demo.data.Country.Continent;
@@ -181,6 +181,17 @@ public class DemoUI extends UI {
             ComboBox comboBox = new ComboBox();
 
             @Override
+            public void triggerUpdate() {
+                if (comboBox.getValue() != null) {
+                    // this will add filter to container and replace old version if existing
+                    cellFilter.replaceFilter(new CustomFilter(columnId, (Continent) comboBox.getValue()), columnId);
+                } else {
+                    // remove filter by columnId
+                    cellFilter.removeFilter(columnId);
+                }
+            }
+
+            @Override
             public HorizontalLayout layoutComponent() {
                 BeanItemContainer<Continent> container = new BeanItemContainer<Continent>(Continent.class, EnumSet.allOf(Continent.class));
 
@@ -195,13 +206,7 @@ public class DemoUI extends UI {
 
                     @Override
                     public void valueChange(final ValueChangeEvent event) {
-                        if (comboBox.getValue() != null) {
-                            // this will add filter to container and replace old version if existing
-                            cellFilter.replaceFilter(new CustomFilter(columnId, (Continent) comboBox.getValue()), columnId);
-                        } else {
-                            // remove filter by columnId
-                            cellFilter.removeFilter(columnId);
-                        }
+                        triggerUpdate();
                     }
                 });
 
@@ -233,15 +238,19 @@ public class DemoUI extends UI {
         this.filter.setNumberFilter("id");
 
         // set gender Combo with custom icons
-        ComboBox genderCombo = this.filter.setComboBoxFilter("gender", Arrays.asList(Inhabitants.Gender.MALE, Inhabitants.Gender.FEMALE));
-        genderCombo.setItemIcon(Inhabitants.Gender.MALE, FontAwesome.MALE);
-        genderCombo.setItemIcon(Inhabitants.Gender.FEMALE, FontAwesome.FEMALE);
+        CellFilterComponent<ComboBox> genderFilter = this.filter.setComboBoxFilter("gender", Arrays.asList(Inhabitants.Gender.MALE, Inhabitants.Gender.FEMALE));
+        genderFilter.getComponent()
+                    .setItemIcon(Inhabitants.Gender.MALE, FontAwesome.MALE);
+        genderFilter.getComponent()
+                    .setItemIcon(Inhabitants.Gender.FEMALE, FontAwesome.FEMALE);
 
         // simple filters
         this.filter.setTextFilter("name", true, true, "name starts with");
         this.filter.setNumberFilter("bodySize", "smallest", "biggest");
-        FieldGroup dateFieldGroup = this.filter.setDateFilter("birthday", new SimpleDateFormat("yyyy-MMM-dd"), true);
-        ((DateField) dateFieldGroup.getField(GridCellFilter.SMALLEST)).setParseErrorMessage("da ist was schief gegangen :)");
+
+        RangeCellFilterComponent<DateField, HorizontalLayout> dateFilter = this.filter.setDateFilter("birthday", new SimpleDateFormat("yyyy-MMM-dd"), true);
+        dateFilter.getSmallestField()
+                  .setParseErrorMessage("da ist was schief gegangen :)");
 
         this.filter.setBooleanFilter("onFacebook",
                 new GridCellFilter.BooleanRepresentation(FontAwesome.THUMBS_UP, "yes"),
@@ -258,14 +267,14 @@ public class DemoUI extends UI {
      */
     private void initExtraHeaderRow(final Grid grid) {
         HeaderRow fistHeaderRow = grid.prependHeaderRow();
-        fistHeaderRow.join("id", "gender", "name", "bodySize", "birthday");
+        fistHeaderRow.join("id", "gender", "name", "bodySize");
         fistHeaderRow.getCell("id")
                 .setHtml("GridCellFilter simplify the filter settings for a grid");
-        fistHeaderRow.join("onFacebook", "country");
+        fistHeaderRow.join("birthday", "onFacebook", "country");
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setSpacing(true);
-        fistHeaderRow.getCell("onFacebook")
-                .setComponent(buttonLayout);
+        fistHeaderRow.getCell("birthday")
+                     .setComponent(buttonLayout);
         Button clearAllFilters = new Button("clearAllFilters", new Button.ClickListener() {
 
             @Override
@@ -293,6 +302,23 @@ public class DemoUI extends UI {
         changeVisibility.setIcon(FontAwesome.EYE_SLASH);
         changeVisibility.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
         buttonLayout.addComponent(changeVisibility);
+
+
+        final Button presetFilter = new Button("presetFilter");
+        presetFilter.addClickListener(new Button.ClickListener() {
+
+
+            @Override
+            public void buttonClick(final ClickEvent event) {
+                CellFilterComponent<TextField> filter = DemoUI.this.filter.getCellFilter("name");
+                filter.getComponent()
+                      .setValue("eth");
+                filter.triggerUpdate();
+            }
+        });
+        presetFilter.setIcon(FontAwesome.PENCIL);
+        presetFilter.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+        buttonLayout.addComponent(presetFilter);
 
         // listener's on filter
         this.filter.addCellFilterChangedListener(new CellFilterChangedListener() {

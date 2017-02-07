@@ -4,19 +4,26 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 
 /**
  * extends CellFilterComponent to allow smallest and biggest filter Component
  *
  * @author Marten Prieß (http://www.non-rocket-science.com)
- * @version 1.0
+ * @version 1.1
  */
-public abstract class RangeCellFilterComponent<C extends Component> extends CellFilterComponent<C> {
+public abstract class RangeCellFilterComponent<F extends Field, C extends Component> extends CellFilterComponent<C> {
 
+	public static final String SMALLEST = "smallest";
+	public static final String BIGGEST = "biggest";
 	private static final long serialVersionUID = 1L;
 	private HorizontalLayout hLayout;
 	private FieldGroup fieldGroup;
+
+	public abstract F getSmallestField();
+
+	public abstract F getBiggestField();
 
 	/**
 	 * creates the layout when not already done
@@ -43,17 +50,25 @@ public abstract class RangeCellFilterComponent<C extends Component> extends Cell
 		return this.fieldGroup;
 	}
 
+	@Override
+	public void triggerUpdate() {
+		try {
+			getFieldGroup().commit();
+		} catch (FieldGroup.CommitException e) {
+		}
+	}
+
 	/**
 	 * creates an PropertysetItem with two properties (smallest and biggest)
-	 * 
+	 *
 	 * @param type
 	 *            that both properties should have
 	 * @return generated PropertysetItem with null as value for both properties
 	 */
 	public PropertysetItem genPropertysetItem(final Class type) {
 		PropertysetItem item = new PropertysetItem();
-		item.addItemProperty("smallest", new ObjectProperty(null, type));
-		item.addItemProperty("biggest", new ObjectProperty(null, type));
+		item.addItemProperty(SMALLEST, new ObjectProperty(null, type));
+		item.addItemProperty(BIGGEST, new ObjectProperty(null, type));
 		return item;
 	}
 }

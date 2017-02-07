@@ -5,7 +5,6 @@ import com.vaadin.data.Container.Filterable;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitEvent;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitHandler;
@@ -37,22 +36,20 @@ import java.util.Map.Entry;
  * GridCellFilter helper that has a bunch of different filtering types
  *
  * @author Marten Prieß (http://www.non-rocket-science.com)
- * @version 1.0
+ * @version 1.1
  */
 public class GridCellFilter implements Serializable {
 
-    private static final String STYLENAME_GRIDCELLFILTER = "gridcellfilter";
+    public static final String STYLENAME_GRIDCELLFILTER = "gridcellfilter";
 
     private static final long serialVersionUID = -6449115552660561941L;
-    public static final String SMALLEST = "smallest";
-    public static final String BIGGEST = "biggest";
 
     private final Grid grid;
     private HeaderRow filterHeaderRow;
-    private final Map<Object, CellFilterComponent<?>> cellFilters;
-    private final Map<Object, Filter> assignedFilters;
-    private final List<CellFilterChangedListener> cellFilterChangedListeners;
+    private Map<Object, CellFilterComponent> cellFilters;
+    private Map<Object, Filter> assignedFilters;
     private boolean visible = true;
+    private List<CellFilterChangedListener> cellFilterChangedListeners;
 
     /**
      * keeps link to Grid and added HeaderRow<br>
@@ -64,43 +61,12 @@ public class GridCellFilter implements Serializable {
     public GridCellFilter(final Grid grid) {
         this.grid = grid;
         this.filterHeaderRow = grid.appendHeaderRow();
-        this.cellFilters = new HashMap<Object, CellFilterComponent<?>>();
+        this.cellFilters = new HashMap<Object, CellFilterComponent>();
         this.assignedFilters = new HashMap<Object, Filter>();
         this.cellFilterChangedListeners = new ArrayList<CellFilterChangedListener>();
 
         if (!(grid.getContainerDataSource() instanceof Filterable)) {
             throw new RuntimeException("container is not Filterable!");
-        }
-    }
-
-    /**
-     * will remove or add the filterHeaderRow<br>
-     * badly the Connectors of the Cell-Components log an error message<br>
-     * <i>Widget is still attached to the DOM after the connector ComboBoxConnector has been unregistered. Widget was removed</i><br>
-     * that's why it deprecated. The grid itself has no feature for changing the visibility of a headerRow
-     *
-     * @param visibile should get displayed?
-     */
-    @Deprecated
-    public void setVisible(final boolean visibile) {
-        if (this.visible != visibile) {
-            if (visibile) {
-                this.filterHeaderRow = this.grid.appendHeaderRow();
-
-                for (Entry<Object, CellFilterComponent<?>> entry : this.cellFilters.entrySet()) {
-                    handleFilterRow(entry.getKey(), entry.getValue());
-                }
-            } else {
-                clearAllFilters();
-                for (Entry<Object, CellFilterComponent<?>> entry : this.cellFilters.entrySet()) {
-                    if (null != this.filterHeaderRow.getCell(entry.getKey())) {
-                        this.filterHeaderRow.getCell(entry.getKey())
-                                .setText("");
-                    }
-                }
-                this.grid.removeHeaderRow(this.filterHeaderRow);
-            }
-            this.visible = visibile;
         }
     }
 
@@ -151,10 +117,51 @@ public class GridCellFilter implements Serializable {
     }
 
     /**
+     * will remove or add the filterHeaderRow<br>
+     * badly the Connectors of the Cell-Components log an error message<br>
+     * <i>Widget is still attached to the DOM after the connector ComboBoxConnector has been unregistered. Widget was removed</i><br>
+     * that's why it deprecated. The grid itself has no feature for changing the visibility of a headerRow
+     *
+     * @param visibile should get displayed?
+     */
+    @Deprecated
+    public void setVisible(final boolean visibile) {
+        if (this.visible != visibile) {
+            if (visibile) {
+                this.filterHeaderRow = this.grid.appendHeaderRow();
+
+                for (Entry<Object, CellFilterComponent> entry : this.cellFilters.entrySet()) {
+                    handleFilterRow(entry.getKey(), entry.getValue());
+                }
+            } else {
+                clearAllFilters();
+                for (Entry<Object, CellFilterComponent> entry : this.cellFilters.entrySet()) {
+                    if (null != this.filterHeaderRow.getCell(entry.getKey())) {
+                        this.filterHeaderRow.getCell(entry.getKey())
+                                            .setText("");
+                    }
+                }
+                this.grid.removeHeaderRow(this.filterHeaderRow);
+            }
+            this.visible = visibile;
+        }
+    }
+
+    /**
+     * get filter by columnId
+     *
+     * @param columnId id of property
+     * @return CellFilterComponent
+     */
+    public CellFilterComponent getCellFilter(final Object columnId) {
+        return cellFilters.get(columnId);
+    }
+
+    /**
      * removes all filters and clear all inputs
      */
     public void clearAllFilters() {
-        for (Entry<Object, CellFilterComponent<?>> entry : this.cellFilters.entrySet()) {
+        for (Entry<Object, CellFilterComponent> entry : this.cellFilters.entrySet()) {
             entry.getValue()
                     .clearFilter();
             removeFilter(entry.getKey(), false);
@@ -169,7 +176,7 @@ public class GridCellFilter implements Serializable {
      */
     public void clearFilter(final Object columnId) {
         this.cellFilters.get(columnId)
-                .clearFilter();
+                        .clearFilter();
         removeFilter(columnId);
     }
 
@@ -247,9 +254,9 @@ public class GridCellFilter implements Serializable {
      * @param columnId        id of property
      * @param ignoreCase      property of SimpleStringFilter
      * @param onlyMatchPrefix property of SimpleStringFilter
-     * @return generated TextField
+     * @return CellFilterComponent that contains TextField
      */
-    public TextField setTextFilter(final Object columnId, final boolean ignoreCase, final boolean onlyMatchPrefix) {
+    public CellFilterComponent<TextField> setTextFilter(final Object columnId, final boolean ignoreCase, final boolean onlyMatchPrefix) {
         return this.setTextFilter(columnId, ignoreCase, onlyMatchPrefix, null);
     }
 
@@ -261,13 +268,23 @@ public class GridCellFilter implements Serializable {
      * @param ignoreCase      property of SimpleStringFilter
      * @param onlyMatchPrefix property of SimpleStringFilter
      * @param inputPrompt     hint for user
-     * @return generated TextField
+     * @return CellFilterComponent that contains TextField
      */
-    public TextField setTextFilter(final Object columnId, final boolean ignoreCase, final boolean onlyMatchPrefix, final String inputPrompt) {
+    public CellFilterComponent<TextField> setTextFilter(final Object columnId, final boolean ignoreCase, final boolean onlyMatchPrefix, final String inputPrompt) {
         CellFilterComponent<TextField> filter = new CellFilterComponent<TextField>() {
 
             private static final long serialVersionUID = 1L;
             TextField textField = new TextField();
+            String currentValue = "";
+
+            @Override
+            public void triggerUpdate() {
+                if (currentValue == null || currentValue.isEmpty()) {
+                    removeFilter(columnId);
+                } else {
+                    replaceFilter(new SimpleStringFilter(columnId, currentValue, ignoreCase, onlyMatchPrefix), columnId);
+                }
+            }
 
             @Override
             public TextField layoutComponent() {
@@ -275,18 +292,25 @@ public class GridCellFilter implements Serializable {
                 this.textField.setInputPrompt(inputPrompt);
                 this.textField.addStyleName(STYLENAME_GRIDCELLFILTER);
                 this.textField.addStyleName(ValoTheme.TEXTFIELD_TINY);
+                // used to allow changes from outside
+                this.textField.addValueChangeListener(new ValueChangeListener() {
+
+                    private static final long serialVersionUID = -3567212620627823001L;
+
+                    @Override
+                    public void valueChange(ValueChangeEvent valueChangeEvent) {
+                        currentValue = textField.getValue();
+                        triggerUpdate();
+                    }
+                });
                 this.textField.addTextChangeListener(new TextChangeListener() {
 
                     private static final long serialVersionUID = -3567212620627878001L;
 
                     @Override
                     public void textChange(final TextChangeEvent event) {
-                        if (event.getText() != null && event.getText()
-                                .length() > 0) {
-                            replaceFilter(new SimpleStringFilter(columnId, event.getText(), ignoreCase, onlyMatchPrefix), columnId);
-                        } else {
-                            removeFilter(columnId);
-                        }
+                        currentValue = event.getText();
+                        triggerUpdate();
                     }
                 });
                 return this.textField;
@@ -298,7 +322,7 @@ public class GridCellFilter implements Serializable {
             }
         };
         handleFilterRow(columnId, filter);
-        return filter.getComponent();
+        return filter;
     }
 
     /**
@@ -306,18 +330,27 @@ public class GridCellFilter implements Serializable {
      *
      * @param columnId id of property
      * @param list     selection for ComboBox
-     * @return drawn comboBox in order to add some custom styles
+     * @return CellFilterComponent that contains ComboBox
      */
-    public ComboBox setComboBoxFilter(final Object columnId, final List list) {
+    public CellFilterComponent<ComboBox> setComboBoxFilter(final Object columnId, final List list) {
         CellFilterComponent<ComboBox> filter = new CellFilterComponent<ComboBox>() {
 
             private static final long serialVersionUID = 1L;
             ComboBox comboBox = new ComboBox();
 
             @Override
+            public void triggerUpdate() {
+                if (comboBox.getValue() != null) {
+                    replaceFilter(new Equal(columnId, comboBox.getValue()), columnId);
+                } else {
+                    removeFilter(columnId);
+                }
+            }
+
+            @Override
             public ComboBox layoutComponent() {
                 BeanItemContainer container = new BeanItemContainer(list.get(0)
-                        .getClass(), list);
+                                                                        .getClass(), list);
 
                 this.comboBox.setNullSelectionAllowed(true);
                 this.comboBox.setImmediate(true);
@@ -330,11 +363,7 @@ public class GridCellFilter implements Serializable {
 
                     @Override
                     public void valueChange(final ValueChangeEvent event) {
-                        if (comboBox.getValue() != null) {
-                            replaceFilter(new Equal(columnId, comboBox.getValue()), columnId);
-                        } else {
-                            removeFilter(columnId);
-                        }
+                        triggerUpdate();
                     }
                 });
                 return this.comboBox;
@@ -347,7 +376,7 @@ public class GridCellFilter implements Serializable {
         };
 
         handleFilterRow(columnId, filter);
-        return filter.getComponent();
+        return filter;
     }
 
 
@@ -389,6 +418,16 @@ public class GridCellFilter implements Serializable {
             }
 
             @Override
+            public void triggerUpdate() {
+                Integer internalId = (Integer) comboBox.getValue();
+                if (internalId != null && internalId > 0) {
+                    replaceFilter(new Equal(columnId, internalId.equals(1) ? Boolean.TRUE : Boolean.FALSE), columnId);
+                } else {
+                    removeFilter(columnId);
+                }
+            }
+
+            @Override
             public ComboBox layoutComponent() {
 
                 this.comboBox.addContainerProperty("icon", FontIcon.class, null);
@@ -412,12 +451,7 @@ public class GridCellFilter implements Serializable {
 
                     @Override
                     public void valueChange(final ValueChangeEvent event) {
-                        Integer internalId = (Integer) comboBox.getValue();
-                        if (internalId != null && internalId > 0) {
-                            replaceFilter(new Equal(columnId, internalId.equals(1) ? Boolean.TRUE : Boolean.FALSE), columnId);
-                        } else {
-                            removeFilter(columnId);
-                        }
+                        triggerUpdate();
                     }
                 });
                 return this.comboBox;
@@ -456,9 +490,9 @@ public class GridCellFilter implements Serializable {
      * only supports type of <b>Integer, Double, Float, BigInteger and BigDecimal</b>
      *
      * @param columnId id of property
-     * @return FieldGroup that holds both TextFields (smallest and biggest as propertyId)
+     * @return RangeCellFilterComponent that holds both TextFields (smallest and biggest as propertyId) and FilterGroup
      */
-    public FieldGroup setNumberFilter(final Object columnId) {
+    public RangeCellFilterComponent<TextField, HorizontalLayout> setNumberFilter(final Object columnId) {
         return this.setNumberFilter(columnId, null, null);
     }
 
@@ -469,12 +503,32 @@ public class GridCellFilter implements Serializable {
      * @param columnId            id of property
      * @param smallestInputPrompt hint for user
      * @param biggestInputPrompt  hint for user
-     * @return FieldGroup that holds both TextFields (smallest and biggest as propertyId)
+     * @return RangeCellFilterComponent that holds both TextFields (smallest and biggest as propertyId) and FilterGroup
      */
-    public FieldGroup setNumberFilter(final Object columnId, final String smallestInputPrompt, final String biggestInputPrompt) {
+    public RangeCellFilterComponent<TextField, HorizontalLayout> setNumberFilter(final Object columnId, final String smallestInputPrompt, final String biggestInputPrompt) {
         final Class type = this.grid.getContainerDataSource()
                 .getType(columnId);
-        RangeCellFilterComponent<HorizontalLayout> filter = new RangeCellFilterComponent<HorizontalLayout>() {
+        RangeCellFilterComponent<TextField, HorizontalLayout> filter = new RangeCellFilterComponent<TextField, HorizontalLayout>() {
+
+            private TextField smallest, biggest;
+
+            @Override
+            public TextField getSmallestField() {
+                if (smallest == null) {
+                    smallest = genNumberField(SMALLEST);
+                    smallest.setInputPrompt(smallestInputPrompt);
+                }
+                return smallest;
+            }
+
+            @Override
+            public TextField getBiggestField() {
+                if (biggest == null) {
+                    biggest = genNumberField(BIGGEST);
+                    biggest.setInputPrompt(biggestInputPrompt);
+                }
+                return biggest;
+            }
 
             private static final long serialVersionUID = 1L;
 
@@ -512,12 +566,9 @@ public class GridCellFilter implements Serializable {
 
                     @Override
                     public void valueChange(final ValueChangeEvent event) {
-                        try {
-                            if (field.isValid()) {
-                                field.setComponentError(null);
-                                getFieldGroup().commit();
-                            }
-                        } catch (CommitException e) {
+                        if (field.isValid()) {
+                            field.setComponentError(null);
+                            triggerUpdate();
                         }
                     }
                 });
@@ -528,14 +579,10 @@ public class GridCellFilter implements Serializable {
             public HorizontalLayout layoutComponent() {
                 getFieldGroup().setItemDataSource(genPropertysetItem(type));
 
-                TextField smallest = genNumberField(SMALLEST);
-                smallest.setInputPrompt(smallestInputPrompt);
-                TextField biggest = genNumberField(BIGGEST);
-                biggest.setInputPrompt(biggestInputPrompt);
-                getHLayout().addComponent(smallest);
-                getHLayout().addComponent(biggest);
-                getHLayout().setExpandRatio(smallest, 1);
-                getHLayout().setExpandRatio(biggest, 1);
+                getHLayout().addComponent(getSmallestField());
+                getHLayout().addComponent(getBiggestField());
+                getHLayout().setExpandRatio(getSmallestField(), 1);
+                getHLayout().setExpandRatio(getBiggestField(), 1);
 
                 initCommitHandler();
 
@@ -598,7 +645,7 @@ public class GridCellFilter implements Serializable {
         };
 
         handleFilterRow(columnId, filter);
-        return filter.getFieldGroup();
+        return filter;
     }
 
     private final static Date MIN_DATE_VALUE = new Date(0); // 1970-01-01 00:00:00
@@ -608,9 +655,9 @@ public class GridCellFilter implements Serializable {
      * assign a <b>BetweenFilter</b> to grid for given columnId<br>
      *
      * @param columnId id of property
-     * @return FieldGroup that holds both TextFields (smallest and biggest as propertyId)
+     * @return RangeCellFilterComponent that holds both DateFields (smallest and biggest as propertyId) and FilterGroup
      */
-    public FieldGroup setDateFilter(final Object columnId) {
+    public RangeCellFilterComponent<DateField, HorizontalLayout> setDateFilter(final Object columnId) {
         return setDateFilter(columnId, null, true);
     }
 
@@ -620,10 +667,29 @@ public class GridCellFilter implements Serializable {
      * @param columnId        id of property
      * @param dateFormat      the dateFormat to be used for the date fields.
      * @param excludeEndOfDay biggest value until the end of the day (DAY + 23:59:59.999)
-     * @return FieldGroup that holds both TextFields (smallest and biggest as propertyId)
+     * @return RangeCellFilterComponent that holds both DateFields (smallest and biggest as propertyId) and FilterGroup
      */
-    public FieldGroup setDateFilter(final Object columnId, final java.text.SimpleDateFormat dateFormat, final boolean excludeEndOfDay) {
-        RangeCellFilterComponent<HorizontalLayout> filter = new RangeCellFilterComponent<HorizontalLayout>() {
+    public RangeCellFilterComponent<DateField, HorizontalLayout> setDateFilter(final Object columnId, final java.text.SimpleDateFormat dateFormat, final boolean excludeEndOfDay) {
+        RangeCellFilterComponent<DateField, HorizontalLayout> filter = new RangeCellFilterComponent<DateField, HorizontalLayout>() {
+
+            private DateField smallest;
+            private DateField biggest;
+
+            @Override
+            public DateField getSmallestField() {
+                if (smallest == null) {
+                    smallest = genDateField(SMALLEST);
+                }
+                return smallest;
+            }
+
+            @Override
+            public DateField getBiggestField() {
+                if (biggest == null) {
+                    biggest = genDateField(BIGGEST);
+                }
+                return biggest;
+            }
 
             /**
              *
@@ -649,12 +715,9 @@ public class GridCellFilter implements Serializable {
 
                     @Override
                     public void valueChange(final ValueChangeEvent event) {
-                        try {
-                            if (dateField.isValid()) {
-                                dateField.setComponentError(null);
-                                getFieldGroup().commit();
-                            }
-                        } catch (CommitException e) {
+                        if (dateField.isValid()) {
+                            dateField.setComponentError(null);
+                            triggerUpdate();
                         }
                     }
                 });
@@ -665,12 +728,11 @@ public class GridCellFilter implements Serializable {
             public HorizontalLayout layoutComponent() {
                 getFieldGroup().setItemDataSource(genPropertysetItem(Date.class));
 
-                DateField smallest = genDateField(SMALLEST);
-                DateField biggest = genDateField(BIGGEST);
-                getHLayout().addComponent(smallest);
-                getHLayout().addComponent(biggest);
-                getHLayout().setExpandRatio(smallest, 1);
-                getHLayout().setExpandRatio(biggest, 1);
+
+                getHLayout().addComponent(getSmallestField());
+                getHLayout().addComponent(getBiggestField());
+                getHLayout().setExpandRatio(getSmallestField(), 1);
+                getHLayout().setExpandRatio(getBiggestField(), 1);
 
                 initCommitHandler();
 
@@ -722,6 +784,6 @@ public class GridCellFilter implements Serializable {
         };
 
         handleFilterRow(columnId, filter);
-        return filter.getFieldGroup();
+        return filter;
     }
 }
