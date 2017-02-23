@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Listener for CellFilter changes
  *
- * @author Marten Prieß (http://www.non-rocket-science.com)
+ * @author Marten Prieß (http://www.rocketbase.io)
  * @version 1.0
  */
 public interface CellFilterChangedListener extends Serializable {

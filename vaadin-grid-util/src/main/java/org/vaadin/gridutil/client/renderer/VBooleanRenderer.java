@@ -6,7 +6,7 @@ import com.vaadin.client.widget.grid.RendererCellReference;
 /**
  * HTML-Drawer for boolean values
  *
- * @author Marten Prieß (http://www.non-rocket-science.com)
+ * @author Marten Prieß (http://www.rocketbase.io)
  * @version 1.0
  */
 public class VBooleanRenderer implements Renderer<Boolean> {

@@ -1,14 +1,15 @@
 package org.vaadin.gridutil.renderer;
 
-import com.vaadin.ui.Grid.AbstractRenderer;
+
+import com.vaadin.ui.renderers.AbstractRenderer;
 
 /**
  * Renders boolean Values as icons
  *
- * @author Marten Prieß (http://www.non-rocket-science.com)
+ * @author Marten Prieß (http://www.rocketbase.io)
  * @version 1.0
  */
-public class BooleanRenderer extends AbstractRenderer<Boolean> {
+public class BooleanRenderer<T> extends AbstractRenderer<T, Boolean> {
 
 	/**
 	 * simple boolean renderer that display true/false as icons

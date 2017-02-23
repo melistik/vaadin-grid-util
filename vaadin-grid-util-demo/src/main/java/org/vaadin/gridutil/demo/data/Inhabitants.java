@@ -1,90 +1,104 @@
 package org.vaadin.gridutil.demo.data;
 
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.FontIcon;
+
 import java.util.Date;
 
 public class Inhabitants {
 
-	public enum Gender {
-		FEMALE, MALE;
-	}
+    private long id;
+    private Gender gender;
+    private String name;
+    private double bodySize;
+    private Date birthday;
+    private boolean onFacebook;
+    private Country country;
+    
+    public Inhabitants() {
 
-	private long id;
-	private Gender gender;
-	private String name;
-	private double bodySize;
-	private Date birthday;
-	private boolean onFacebook;
-	private Country country;
+    }
 
-	public Inhabitants() {
+    public Inhabitants(final long id, final Gender gender) {
+        super();
+        this.id = id;
+        this.gender = gender;
+    }
 
-	}
+    public long getId() {
+        return this.id;
+    }
 
-	public Inhabitants(final long id, final Gender gender) {
-		super();
-		this.id = id;
-		this.gender = gender;
-	}
+    public void setId(final long id) {
+        this.id = id;
+    }
 
-	public long getId() {
-		return this.id;
-	}
+    public Gender getGender() {
+        return this.gender;
+    }
 
-	public void setId(final long id) {
-		this.id = id;
-	}
+    public void setGender(final Gender gender) {
+        this.gender = gender;
+    }
 
-	public Gender getGender() {
-		return this.gender;
-	}
+    public String getName() {
+        return this.name;
+    }
 
-	public void setGender(final Gender gender) {
-		this.gender = gender;
-	}
+    public void setName(final String name) {
+        this.name = name;
+    }
 
-	public String getName() {
-		return this.name;
-	}
+    public double getBodySize() {
+        return this.bodySize;
+    }
 
-	public void setName(final String name) {
-		this.name = name;
-	}
+    public void setBodySize(final double bodySize) {
+        this.bodySize = bodySize;
+    }
 
-	public double getBodySize() {
-		return this.bodySize;
-	}
+    public Date getBirthday() {
+        return this.birthday;
+    }
 
-	public void setBodySize(final double bodySize) {
-		this.bodySize = bodySize;
-	}
+    public void setBirthday(final Date birthday) {
+        this.birthday = birthday;
+    }
 
-	public Date getBirthday() {
-		return this.birthday;
-	}
+    public boolean isOnFacebook() {
+        return this.onFacebook;
+    }
 
-	public void setBirthday(final Date birthday) {
-		this.birthday = birthday;
-	}
+    public void setOnFacebook(final boolean onFacebook) {
+        this.onFacebook = onFacebook;
+    }
 
-	public boolean isOnFacebook() {
-		return this.onFacebook;
-	}
+    public Country getCountry() {
+        return this.country;
+    }
 
-	public void setOnFacebook(final boolean onFacebook) {
-		this.onFacebook = onFacebook;
-	}
+    public void setCountry(final Country country) {
+        this.country = country;
+    }
 
-	public Country getCountry() {
-		return this.country;
-	}
+    @Override
+    public String toString() {
+        return "Inhabitants [id=" + this.id + ", name=" + this.name + "]";
+    }
 
-	public void setCountry(final Country country) {
-		this.country = country;
-	}
+    public enum Gender {
+        FEMALE(VaadinIcons.FEMALE),
+        MALE(VaadinIcons.MALE);
 
-	@Override
-	public String toString() {
-		return "Inhabitants [id=" + this.id + ", name=" + this.name + "]";
-	}
+        private FontIcon icon;
+
+        Gender(FontIcon icon) {
+            this.icon = icon;
+        }
+
+        public FontIcon getIcon() {
+            return icon;
+        }
+    }
 
 }

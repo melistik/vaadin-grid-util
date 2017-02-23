@@ -2,36 +2,25 @@ package org.vaadin.gridutil.demo;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Container.ItemSetChangeEvent;
-import com.vaadin.data.Container.ItemSetChangeListener;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.ValueProvider;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.SerializablePredicate;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Grid.CellReference;
-import com.vaadin.ui.Grid.CellStyleGenerator;
-import com.vaadin.ui.Grid.FooterRow;
-import com.vaadin.ui.Grid.HeaderRow;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.renderers.ClickableRenderer.RendererClickEvent;
-import com.vaadin.ui.renderers.ClickableRenderer.RendererClickListener;
+import com.vaadin.ui.components.grid.FooterRow;
+import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import org.vaadin.gridutil.GridUtil;
+import org.vaadin.gridutil.ShortValueProvider;
 import org.vaadin.gridutil.cell.CellFilterChangedListener;
 import org.vaadin.gridutil.cell.CellFilterComponent;
 import org.vaadin.gridutil.cell.GridCellFilter;
 import org.vaadin.gridutil.cell.RangeCellFilterComponent;
-import org.vaadin.gridutil.converter.SimpleStringConverter;
-import org.vaadin.gridutil.demo.data.Country;
 import org.vaadin.gridutil.demo.data.Country.Continent;
 import org.vaadin.gridutil.demo.data.DummyDataGen;
 import org.vaadin.gridutil.demo.data.Inhabitants;
@@ -44,8 +33,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.EnumSet;
-import java.util.Locale;
+import java.util.List;
 
 
 @SpringUI()
@@ -73,18 +61,19 @@ public class DemoUI extends UI {
 
     private Grid genGrid() {
         // init Grid
-        final Grid grid = new Grid();
+        final Grid grid = new Grid(Inhabitants.class);
         grid.setSizeFull();
 
         // init Container
-        BeanItemContainer<Inhabitants> container = new BeanItemContainer<Inhabitants>(Inhabitants.class, DummyDataGen.genInhabitants(1000));
-        grid.setContainerDataSource(container);
-        grid.setColumnOrder("id", "gender", "name", "bodySize", "birthday", "onFacebook", "country");
+        List<Inhabitants> items = DummyDataGen.genInhabitants(1000);
+        grid.setItems(items);
 
         setColumnRenderes(grid);
 
+        grid.setColumnOrder("id", "gender", "name", "bodySize", "birthday", "onFacebook", "country");
+
         initFilter(grid);
-        initFooterRow(grid, container);
+        initFooterRow(grid, items);
         initExtraHeaderRow(grid);
 
         initColumnAlignments(grid);
@@ -92,70 +81,56 @@ public class DemoUI extends UI {
     }
 
     private void setColumnRenderes(final Grid grid) {
-        grid.getColumn("id")
-                .setRenderer(new EditDeleteButtonValueRenderer(new EditDeleteButtonValueRenderer.EditDeleteButtonClickListener() {
+        grid.addColumn(ShortValueProvider.getter(Inhabitants.class, "id"),
+                new EditDeleteButtonValueRenderer<Inhabitants>(edit -> {
+                    Notification.show(edit.getItem()
+                            .toString() + " want's to get edited", Type.HUMANIZED_MESSAGE);
+                }, delete -> {
+                    Notification.show(delete.getItem()
+                            .toString() + " want's to get deleted", Type.WARNING_MESSAGE);
 
-                    @Override
-                    public void onEdit(final RendererClickEvent event) {
-                        Notification.show(event.getItemId()
-                                .toString() + " want's to get edited", Type.HUMANIZED_MESSAGE);
-                    }
-
-                    @Override
-                    public void onDelete(final RendererClickEvent event) {
-                        Notification.show(event.getItemId()
-                                .toString() + " want's to get deleted", Type.WARNING_MESSAGE);
-                    }
                 }))
                 .setWidth(160);
 
-        grid.getColumn("bodySize")
-                .setRenderer(new IndicatorRenderer(1.8, 1.1))
+        grid.addColumn(ShortValueProvider.getter(Inhabitants.class, "bodySize"), new IndicatorRenderer(1.8, 1.1))
                 .setWidth(150);
-        grid.getColumn("birthday")
-                .setRenderer(new DateRenderer(DateFormat.getDateInstance()))
+        grid.addColumn(ShortValueProvider.getter(Inhabitants.class, "birthday"), new DateRenderer(DateFormat.getDateInstance()))
                 .setWidth(210);
-        grid.getColumn("onFacebook")
-                .setRenderer(new BooleanRenderer())
+        grid.addColumn(ShortValueProvider.getter(Inhabitants.class, "onFacebook"), new BooleanRenderer())
                 .setWidth(130);
 
 		/*
          * the icon of the editButton will get overwritten below by css styling @see DemoUI.initColumnAlignments
 		 */
-        grid.getColumn("country")
-                .setRenderer(new EditButtonValueRenderer(new RendererClickListener() {
-
-                    @Override
-                    public void click(final RendererClickEvent event) {
-                        Notification.show("Goto Link for " + ((Inhabitants) event.getItemId()).getCountry()
-                                .getName(), Type.HUMANIZED_MESSAGE);
-                    }
-                }), new SimpleStringConverter<Country>(Country.class) {
-
-                    @Override
-                    public String convertToPresentation(final Country value, final Class<? extends String> targetType, final Locale locale)
-                            throws com.vaadin.data.util.converter.Converter.ConversionException {
-                        return String.format("%s <i>(%d)</i>", value.getName(), value.getPopulation());
-                    }
-                });
+        grid.addColumn((ValueProvider<Inhabitants, String>) value -> String.format("%s <i>(%d)</i>",
+                value.getCountry()
+                        .getPopulation(),
+                value.getCountry()
+                        .getPopulation()), new EditButtonValueRenderer<Inhabitants>(e -> {
+            Notification.show("Goto Link for " + e.getItem()
+                    .getCountry()
+                    .getName(), Type.HUMANIZED_MESSAGE);
+        }));
     }
 
     /**
      * generates a simple totalCount footer
      *
      * @param grid
-     * @param container
+     * @param items
      */
-    private void initFooterRow(final Grid grid, final BeanItemContainer<Inhabitants> container) {
+    private void initFooterRow(final Grid grid, List<Inhabitants> items) {
         final FooterRow footerRow = grid.appendFooterRow();
         footerRow.getCell("id")
                 .setHtml("total:");
         footerRow.join("gender", "name", "bodySize", "birthday", "onFacebook", "country");
         // inital total count
         footerRow.getCell("gender")
-                .setHtml("<b>" + container.getItemIds()
-                        .size() + "</b>");
+                .setHtml("<b>" + items.size() + "</b>");
+
         // filter change count recalculate
+        // TODO: need to find a solution for it
+        /*
         container.addItemSetChangeListener(new ItemSetChangeListener() {
 
             @Override
@@ -166,6 +141,7 @@ public class DemoUI extends UI {
                                 .size() + "</b>");
             }
         });
+        */
     }
 
     /**
@@ -178,13 +154,13 @@ public class DemoUI extends UI {
     private CellFilterComponent<HorizontalLayout> customFilterComponent(final GridCellFilter cellFilter, final String columnId) {
         CellFilterComponent<HorizontalLayout> filter = new CellFilterComponent<HorizontalLayout>() {
 
-            ComboBox comboBox = new ComboBox();
+            ComboBox<Continent> comboBox = new ComboBox<>();
 
             @Override
             public void triggerUpdate() {
                 if (comboBox.getValue() != null) {
                     // this will add filter to container and replace old version if existing
-                    cellFilter.replaceFilter(new CustomFilter(columnId, (Continent) comboBox.getValue()), columnId);
+                    cellFilter.replaceFilter(new CustomFilter(comboBox.getValue()), columnId);
                 } else {
                     // remove filter by columnId
                     cellFilter.removeFilter(columnId);
@@ -193,22 +169,11 @@ public class DemoUI extends UI {
 
             @Override
             public HorizontalLayout layoutComponent() {
-                BeanItemContainer<Continent> container = new BeanItemContainer<Continent>(Continent.class, EnumSet.allOf(Continent.class));
 
-                this.comboBox.setNullSelectionAllowed(true);
-                this.comboBox.setImmediate(true);
                 this.comboBox.setWidth(100, Unit.PERCENTAGE);
-                this.comboBox.setContainerDataSource(container);
-                this.comboBox.setItemCaptionMode(ItemCaptionMode.PROPERTY);
-                this.comboBox.setItemCaptionPropertyId("display");
+                comboBox.setItemCaptionGenerator(e -> e.getDisplay());
                 this.comboBox.addStyleName(ValoTheme.TEXTFIELD_TINY);
-                this.comboBox.addValueChangeListener(new ValueChangeListener() {
-
-                    @Override
-                    public void valueChange(final ValueChangeEvent event) {
-                        triggerUpdate();
-                    }
-                });
+                this.comboBox.addValueChangeListener(e -> triggerUpdate());
 
                 HorizontalLayout hLayout = new HorizontalLayout();
                 hLayout.addStyleName("filter-header");
@@ -234,27 +199,29 @@ public class DemoUI extends UI {
      * @param grid
      */
     private void initFilter(final Grid grid) {
-        this.filter = new GridCellFilter(grid);
-        this.filter.setNumberFilter("id");
+        this.filter = new GridCellFilter(grid, Inhabitants.class);
+        this.filter.setNumberFilter("id", Long.class);
 
         // set gender Combo with custom icons
-        CellFilterComponent<ComboBox> genderFilter = this.filter.setComboBoxFilter("gender", Arrays.asList(Inhabitants.Gender.MALE, Inhabitants.Gender.FEMALE));
+        CellFilterComponent<ComboBox<Inhabitants.Gender>> genderFilter = this.filter.setComboBoxFilter("gender",
+                Inhabitants.Gender.class,
+                Arrays.asList(Inhabitants.Gender.MALE, Inhabitants.Gender.FEMALE));
         genderFilter.getComponent()
-                    .setItemIcon(Inhabitants.Gender.MALE, FontAwesome.MALE);
-        genderFilter.getComponent()
-                    .setItemIcon(Inhabitants.Gender.FEMALE, FontAwesome.FEMALE);
+                .setItemIconGenerator(i -> i.getIcon());
 
         // simple filters
         this.filter.setTextFilter("name", true, true, "name starts with");
-        this.filter.setNumberFilter("bodySize", "smallest", "biggest");
+        this.filter.setNumberFilter("bodySize", Double.class, "invalid input", "smallest", "biggest");
 
-        RangeCellFilterComponent<DateField, HorizontalLayout> dateFilter = this.filter.setDateFilter("birthday", new SimpleDateFormat("yyyy-MMM-dd"), true);
+        RangeCellFilterComponent<Date, DateField, HorizontalLayout> dateFilter = this.filter.setDateFilter("birthday",
+                new SimpleDateFormat("yyyy-MMM-dd"),
+                true);
         dateFilter.getSmallestField()
-                  .setParseErrorMessage("da ist was schief gegangen :)");
+                .setParseErrorMessage("da ist was schief gegangen :)");
 
         this.filter.setBooleanFilter("onFacebook",
-                new GridCellFilter.BooleanRepresentation(FontAwesome.THUMBS_UP, "yes"),
-                new GridCellFilter.BooleanRepresentation(FontAwesome.THUMBS_DOWN, "nope"));
+                new GridCellFilter.BooleanRepresentation(true, VaadinIcons.THUMBS_UP, "yes"),
+                new GridCellFilter.BooleanRepresentation(false, VaadinIcons.THUMBS_DOWN, "nope"));
 
         // set country combo with custom caption
         this.filter.setCustomFilter("country", customFilterComponent(this.filter, "country"));
@@ -274,7 +241,7 @@ public class DemoUI extends UI {
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setSpacing(true);
         fistHeaderRow.getCell("birthday")
-                     .setComponent(buttonLayout);
+                .setComponent(buttonLayout);
         Button clearAllFilters = new Button("clearAllFilters", new Button.ClickListener() {
 
             @Override
@@ -312,7 +279,7 @@ public class DemoUI extends UI {
             public void buttonClick(final ClickEvent event) {
                 CellFilterComponent<TextField> filter = DemoUI.this.filter.getCellFilter("name");
                 filter.getComponent()
-                      .setValue("eth");
+                        .setValue("eth");
                 filter.triggerUpdate();
             }
         });
@@ -336,67 +303,50 @@ public class DemoUI extends UI {
      * @param grid
      */
     private void initColumnAlignments(final Grid grid) {
-        grid.setCellStyleGenerator(new CellStyleGenerator() {
-            @Override
-            public String getStyle(final CellReference cellReference) {
-                if (cellReference.getPropertyId()
-                        .equals("id")) {
-                    return GridUtil.ALIGN_CELL_RIGHT;
-                } else if (cellReference.getPropertyId()
-                        .equals("birthday")) {
-                    return GridUtil.ALIGN_CELL_CENTER;
-                } else if (cellReference.getPropertyId()
-                        .equals("country")) {
-                    /*
-                     * example how to change the icon of the buttons
-					 *
-					 * @formatter:off
-					 * .v-grid-cell.link-icon .v-button-bar button.v-edit span:before {
-					 *   color: blue; // recolor icon
-					 *   content: "\f0c1"; // content-code of FontAwesome that is served by vaadin!
-					 * }
-					 * @formatter:on
-					 */
-                    return "link-icon";
-                } else {
-                    return null;
-                }
-            }
+        grid.getColumn("id")
+                .setStyleGenerator(e -> GridUtil.ALIGN_CELL_RIGHT);
+        grid.getColumn("birthday")
+                .setStyleGenerator(e -> GridUtil.ALIGN_CELL_CENTER);
+        grid.getColumn("country")
+                .setStyleGenerator(e -> {
+            /*
+             * example how to change the icon of the buttons
+             *
+             * @formatter:off
+             * .v-grid-cell.link-icon .v-button-bar button.v-edit span:before {
+             *   color: blue; // recolor icon
+             *   content: "\f0c1"; // content-code of FontAwesome that is served by vaadin!
+             * }
+             * @formatter:on
+             */
+            return "link-icon";
         });
     }
 
     /**
      * example of a custom Filter that filter's by a subpropertiy of an object
      */
-    private class CustomFilter implements Filter {
+    private class CustomFilter implements SerializablePredicate<Inhabitants> {
 
-        private final Object propertyId;
-        private final Continent value;
+        private final Continent continent;
 
-        public CustomFilter(final Object propertyId, final Continent value) {
-            this.propertyId = propertyId;
-            this.value = value;
+        public CustomFilter(final Continent continent) {
+            this.continent = continent;
         }
 
         @Override
-        public boolean passesFilter(final Object itemId, final Item item) throws UnsupportedOperationException {
-            if (this.value == null) {
+        public boolean test(Inhabitants value) {
+            if (this.continent == null) {
                 return true;
             }
-            final Property<?> p = item.getItemProperty(this.propertyId);
-            if (null == p) {
+
+            if (value  == null) {
                 return false;
             }
-            if (p.getValue() instanceof Country) {
-                Country itemValue = (Country) p.getValue();
-                return this.value.equals(itemValue.getContinent());
+            if (value.getCountry() != null) {
+                return value.getCountry().equals(continent);
             }
             return false;
-        }
-
-        @Override
-        public boolean appliesToProperty(final Object propertyId) {
-            return this.propertyId.equals(propertyId);
         }
     }
 

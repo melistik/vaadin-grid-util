@@ -1,10 +1,11 @@
 package org.vaadin.gridutil.renderer;
 
+import com.vaadin.shared.ui.grid.renderers.AbstractRendererState;
+import com.vaadin.ui.renderers.AbstractRenderer;
 import org.vaadin.gridutil.client.renderer.indicator.IndicatorRendererState;
 
-import com.vaadin.ui.Grid.AbstractRenderer;
 
-public class IndicatorRenderer extends AbstractRenderer<Double> {
+public class IndicatorRenderer<T> extends AbstractRenderer<T, Double> {
 
     public IndicatorRenderer(double startGreen, double startRed) {
         super(Double.class);

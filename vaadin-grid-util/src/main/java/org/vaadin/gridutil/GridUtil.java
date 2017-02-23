@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * contains some css class names for styling the grid
  * 
- * @author Marten Prieß (http://www.non-rocket-science.com)
+ * @author Marten Prieß (http://www.rocketbase.io)
  * @version 1.0 *
  */
 public class GridUtil implements Serializable {

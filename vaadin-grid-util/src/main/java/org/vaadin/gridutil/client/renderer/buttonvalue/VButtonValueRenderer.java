@@ -12,7 +12,7 @@ import com.vaadin.client.widget.grid.RendererCellReference;
 /**
  * UpperClass for all ButtonValueVariations: draws a FlowPanel, adds a HTML widget that could handle clicks and add a label for value
  *
- * @author Marten Prieß (http://www.non-rocket-science.com)
+ * @author Marten Prieß (http://www.rocketbase.io)
  * @version 1.0
  */
 public class VButtonValueRenderer extends ClickableRenderer<String, FlowPanel> {

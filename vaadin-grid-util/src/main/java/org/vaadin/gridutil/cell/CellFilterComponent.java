@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * Interface for each CellFilter in order to allow clear values
  *
- * @author Marten Prieß (http://www.non-rocket-science.com)
+ * @author Marten Prieß (http://www.rocketbase.io)
  * @version 1.1
  */
 public abstract class CellFilterComponent<C extends Component> implements Serializable {
