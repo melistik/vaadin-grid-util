@@ -1,122 +1,140 @@
 /* --------- boolean renderer --------- */
 .v-icon.v-grid-cell-boolean {
-	font-family: FontAwesome;
-	font-style: normal;
-	font-weight: normal;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	display: inline-block;
-	text-align: center;
-	vertical-align: middle;
+    font-family: "Vaadin-Icons";
+    font-style: normal;
+    font-weight: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
 }
+
 .v-grid-cell-boolean.boolean-true:before {
-	content: "\f14a";
+    content: "\e75b";
 }
+
 .v-grid-cell-boolean.boolean-false:before {
-	content: "\f00d";
+    content: "\e7ad";
 }
+
 .v-grid-cell-boolean.boolean-null:before {
-	content: "\f096";
+    content: "\e75c";
 }
 
 .v-grid-row .v-grid-cell center, .v-grid-row .v-grid-cell .v-icon.v-grid-cell-boolean {
-	line-height: inherit;
+    line-height: inherit;
 }
-
 
 /* --------- button value renderer --------- */
 .v-button-value-cell {
-	clear: both;
-	position: relative;
-	width: 100%;
+    clear: both;
+    position: relative;
+    width: 100%;
 }
+
 .v-button-value-cell .v-button-bar {
-	position: absolute;
-	left: -4px;
-	top: -4px;
-	display: inline-block;
-	text-align: center;
+    position: absolute;
+    left: -4px;
+    top: -4px;
+    display: inline-block;
+    text-align: center;
 }
+
 .v-button-value-cell .v-button-bar button {
-	cursor: pointer;
-	width: 30px;
-	height: 30px;
-	font-family: FontAwesome !important;
-	font-style: normal;
-	font-weight: normal;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	margin-right: 2px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    font-family: Vaadin-Icons !important;
+    font-style: normal;
+    font-weight: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin-right: 2px;
 }
+
 .v-button-value-cell .v-button-bar button.v-view span:before {
-	content:  "\f06e";
+    content: "\e7df";
 }
+
 .v-button-value-cell .v-button-bar button.v-edit span:before {
-	content:  "\f040";
+    content: "\e7fa";
 }
+
 .v-button-value-cell .v-button-bar button.v-delete span:before {
-	content: "\f014";
+    content: "\e80b";
 }
+
 .v-button-value-cell .v-cell-value {
-	padding-left: 32px;
+    padding-left: 32px;
 }
+
 .v-button-value-cell.two-buttons .v-cell-value {
-	padding-left: 65px;
+    padding-left: 65px;
 }
+
 .v-button-value-cell.three-buttons .v-cell-value {
-	padding-left: 98px;
+    padding-left: 98px;
 }
 
 /* fix for reindeer theme */
 .reindeer .v-button-value-cell .v-button-bar button {
-	width: 20px;
-	height: 20px;
-}
-.reindeer .v-button-value-cell .v-cell-value {
-	padding-left: 22px;
-}
-.reindeer .v-button-value-cell.two-buttons .v-cell-value {
-	padding-left: 45px;
-}
-.reindeer .v-button-value-cell.three-buttons .v-cell-value {
-	padding-left: 68px;
-}
-.reindeer .v-button-bar button span {
-  margin: 0 0 0 -3px;
+    width: 20px;
+    height: 20px;
 }
 
+.reindeer .v-button-value-cell .v-cell-value {
+    padding-left: 22px;
+}
+
+.reindeer .v-button-value-cell.two-buttons .v-cell-value {
+    padding-left: 45px;
+}
+
+.reindeer .v-button-value-cell.three-buttons .v-cell-value {
+    padding-left: 68px;
+}
+
+.reindeer .v-button-bar button span {
+    margin: 0 0 0 -3px;
+}
 
 /* --------- grid cell alignment --------- */
 .v-grid-cell.centeralign {
-	text-align: center;
+    text-align: center;
 }
+
 .v-grid-cell.rightalign {
-	text-align: right;
+    text-align: right;
 }
 
 /* --------- indicator styling --------- */
 .v-grid-cell-indicator {
-	width: 100%;
-	height: 100%;
-	text-align: center;
-	cursor: pointer;
-}
-.v-grid-row .v-grid-cell .v-grid-cell-indicator {
-	line-height: inherit;
-}
-.v-grid-cell-indicator span.green {
-	color: green;
-}
-.v-grid-cell-indicator span.red {
-	color: red;
-}
-.v-grid-cell-indicator span.black {
-	color: black;
-}
-.v-grid-cell-indicator span.na {
-	color: yellow;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    cursor: pointer;
 }
 
+.v-grid-row .v-grid-cell .v-grid-cell-indicator {
+    line-height: inherit;
+}
+
+.v-grid-cell-indicator span.green {
+    color: green;
+}
+
+.v-grid-cell-indicator span.red {
+    color: red;
+}
+
+.v-grid-cell-indicator span.black {
+    color: black;
+}
+
+.v-grid-cell-indicator span.na {
+    color: yellow;
+}
 
 /* --------- reindeer theme --------- */
 .reindeer.v-app .filter-header input.v-textfield.v-widget.tiny,
@@ -124,5 +142,5 @@
 .reindeer.v-app .filter-header .v-datefield-gridcellfilter.tiny .v-datefield-button,
 .reindeer.v-app .filter-header .v-filterselect.tiny,
 .reindeer.v-app .filter-header input.v-filterselect-input {
-	height: 19px;
+    height: 19px;
 }
