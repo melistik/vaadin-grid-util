@@ -4,7 +4,6 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
@@ -16,7 +15,6 @@ import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import org.vaadin.gridutil.GridUtil;
-import org.vaadin.gridutil.ShortValueProvider;
 import org.vaadin.gridutil.cell.CellFilterChangedListener;
 import org.vaadin.gridutil.cell.CellFilterComponent;
 import org.vaadin.gridutil.cell.GridCellFilter;
@@ -70,7 +68,9 @@ public class DemoUI extends UI {
 
         setColumnRenderes(grid);
 
-        grid.setColumnOrder("id", "gender", "name", "bodySize", "birthday", "onFacebook", "country");
+        grid.setColumnOrder("id", "gender", "name", "bodySize", "birthday", "onFacebook");
+        grid.getColumn("country")
+                .setHidden(true);
 
         initFilter(grid);
         initFooterRow(grid, items);
@@ -81,22 +81,26 @@ public class DemoUI extends UI {
     }
 
     private void setColumnRenderes(final Grid grid) {
-        grid.addColumn(ShortValueProvider.getter(Inhabitants.class, "id"),
-                new EditDeleteButtonValueRenderer<Inhabitants>(edit -> {
-                    Notification.show(edit.getItem()
-                            .toString() + " want's to get edited", Type.HUMANIZED_MESSAGE);
-                }, delete -> {
-                    Notification.show(delete.getItem()
-                            .toString() + " want's to get deleted", Type.WARNING_MESSAGE);
+        grid.getColumn("id")
+                .setRenderer(
+                        new EditDeleteButtonValueRenderer<Inhabitants>(edit -> {
+                            Notification.show(edit.getItem()
+                                    .toString() + " want's to get edited", Type.HUMANIZED_MESSAGE);
+                        }, delete -> {
+                            Notification.show(delete.getItem()
+                                    .toString() + " want's to get deleted", Type.WARNING_MESSAGE);
 
-                }))
+                        }))
                 .setWidth(160);
 
-        grid.addColumn(ShortValueProvider.getter(Inhabitants.class, "bodySize"), new IndicatorRenderer(1.8, 1.1))
+        grid.getColumn("bodySize")
+                .setRenderer(new IndicatorRenderer(1.8, 1.1))
                 .setWidth(150);
-        grid.addColumn(ShortValueProvider.getter(Inhabitants.class, "birthday"), new DateRenderer(DateFormat.getDateInstance()))
+        grid.getColumn("birthday")
+                .setRenderer(new DateRenderer(DateFormat.getDateInstance()))
                 .setWidth(210);
-        grid.addColumn(ShortValueProvider.getter(Inhabitants.class, "onFacebook"), new BooleanRenderer())
+        grid.getColumn("onFacebook")
+                .setRenderer(new BooleanRenderer())
                 .setWidth(130);
 
 		/*
@@ -104,7 +108,7 @@ public class DemoUI extends UI {
 		 */
         grid.addColumn((ValueProvider<Inhabitants, String>) value -> String.format("%s <i>(%d)</i>",
                 value.getCountry()
-                        .getPopulation(),
+                        .getName(),
                 value.getCountry()
                         .getPopulation()), new EditButtonValueRenderer<Inhabitants>(e -> {
             Notification.show("Goto Link for " + e.getItem()
@@ -213,7 +217,7 @@ public class DemoUI extends UI {
         this.filter.setTextFilter("name", true, true, "name starts with");
         this.filter.setNumberFilter("bodySize", Double.class, "invalid input", "smallest", "biggest");
 
-        RangeCellFilterComponent<Date, DateField, HorizontalLayout> dateFilter = this.filter.setDateFilter("birthday",
+        RangeCellFilterComponent<DateField, HorizontalLayout> dateFilter = this.filter.setDateFilter("birthday",
                 new SimpleDateFormat("yyyy-MMM-dd"),
                 true);
         dateFilter.getSmallestField()
@@ -249,7 +253,7 @@ public class DemoUI extends UI {
                 DemoUI.this.filter.clearAllFilters();
             }
         });
-        clearAllFilters.setIcon(FontAwesome.TIMES);
+        clearAllFilters.setIcon(VaadinIcons.CLOSE);
         clearAllFilters.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
         buttonLayout.addComponent(clearAllFilters);
 
@@ -261,12 +265,12 @@ public class DemoUI extends UI {
             @Override
             public void buttonClick(final ClickEvent event) {
                 this.visibile = !this.visibile;
-                changeVisibility.setIcon(this.visibile ? FontAwesome.EYE_SLASH : FontAwesome.EYE);
+                changeVisibility.setIcon(this.visibile ? VaadinIcons.EYE_SLASH : VaadinIcons.EYE);
                 DemoUI.this.filter.setVisible(this.visibile);
                 Notification.show("changed visibility to: " + this.visibile + "! Sometimes it's working sometimes not - it's deprecated!", Type.ERROR_MESSAGE);
             }
         });
-        changeVisibility.setIcon(FontAwesome.EYE_SLASH);
+        changeVisibility.setIcon(VaadinIcons.EYE_SLASH);
         changeVisibility.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
         buttonLayout.addComponent(changeVisibility);
 
@@ -283,7 +287,7 @@ public class DemoUI extends UI {
                 filter.triggerUpdate();
             }
         });
-        presetFilter.setIcon(FontAwesome.PENCIL);
+        presetFilter.setIcon(VaadinIcons.PENCIL);
         presetFilter.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
         buttonLayout.addComponent(presetFilter);
 

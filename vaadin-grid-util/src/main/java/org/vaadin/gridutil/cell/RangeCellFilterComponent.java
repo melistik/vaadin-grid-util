@@ -11,7 +11,7 @@ import com.vaadin.ui.HorizontalLayout;
  * @author Marten Prieß (http://www.rocketbase.io)
  * @version 1.1
  */
-public abstract class RangeCellFilterComponent<V, F extends HasValue, C extends Component> extends CellFilterComponent<C> {
+public abstract class RangeCellFilterComponent<F extends HasValue, C extends Component> extends CellFilterComponent<C> {
 
     public static final String SMALLEST = "smallest";
     public static final String BIGGEST = "biggest";
@@ -56,25 +56,5 @@ public abstract class RangeCellFilterComponent<V, F extends HasValue, C extends 
         getBinder().setBean(getBinder().getBean());
     }
 
-    public class TwoValueObject<V> {
-        private V smallest;
-        private V biggest;
-
-        public V getSmallest() {
-            return smallest;
-        }
-
-        public void setSmallest(V smallest) {
-            this.smallest = smallest;
-        }
-
-        public V getBiggest() {
-            return biggest;
-        }
-
-        public void setBiggest(V biggest) {
-            this.biggest = biggest;
-        }
-    }
 
 }

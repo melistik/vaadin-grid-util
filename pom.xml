@@ -30,7 +30,7 @@
     </licenses>
 
     <properties>
-        <vaadin.version>8.0.0</vaadin.version>
+        <vaadin.version>8.0.3</vaadin.version>
         <project.source.version>1.8</project.source.version>
         <project.target.version>1.8</project.target.version>
         <project.encoding>UTF-8</project.encoding>

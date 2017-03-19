@@ -20,7 +20,6 @@ import org.vaadin.gridutil.cell.filter.SimpleStringFilter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -204,6 +203,7 @@ public class GridCellFilter<T> implements Serializable {
      */
     public void replaceFilter(SerializablePredicate filter, String columnId) {
         // TODO: needs to get new implementation
+
         dataProvider.addFilter(propertySet.getProperty(columnId)
                 .get()
                 .getGetter(), filter);
@@ -422,7 +422,7 @@ public class GridCellFilter<T> implements Serializable {
      * @param columnId id of property
      * @return RangeCellFilterComponent that holds both TextFields (smallest and biggest as propertyId) and FilterGroup
      */
-    public <V> RangeCellFilterComponent<V, TextField, HorizontalLayout> setNumberFilter(String columnId, Class<V> type) {
+    public RangeCellFilterComponent<TextField, HorizontalLayout> setNumberFilter(String columnId, Class type) {
         return setNumberFilter(columnId, type, String.format("couldn't convert to %s", type.getSimpleName()), null, null);
     }
 
@@ -435,16 +435,21 @@ public class GridCellFilter<T> implements Serializable {
      * @param biggestInputPrompt  hint for user
      * @return RangeCellFilterComponent that holds both TextFields (smallest and biggest as propertyId) and FilterGroup
      */
-    public <V> RangeCellFilterComponent<V, TextField, HorizontalLayout> setNumberFilter(String columnId, Class<V> type, String converterErrorMessage, String smallestInputPrompt, String biggestInputPrompt) {
+    public RangeCellFilterComponent<TextField, HorizontalLayout> setNumberFilter(String columnId, Class type, String converterErrorMessage, String smallestInputPrompt, String biggestInputPrompt) {
 
-        RangeCellFilterComponent<V, TextField, HorizontalLayout> filter = new RangeCellFilterComponent<V, TextField, HorizontalLayout>() {
+        RangeCellFilterComponent<TextField, HorizontalLayout> filter = new RangeCellFilterComponent<TextField, HorizontalLayout>() {
 
             private TextField smallest, biggest;
 
             @Override
             public TextField getSmallestField() {
                 if (smallest == null) {
-                    smallest = genNumberField(SMALLEST);
+                    smallest = genNumberField();
+                    getBinder().forField(smallest)
+                            .withNullRepresentation("")
+                            .withValidator(text -> text != null && text.length() > 0, "invalid")
+                            .withConverter(getConverter())
+                            .bind("smallest");
                     smallest.setPlaceholder(smallestInputPrompt);
                 }
                 return smallest;
@@ -453,7 +458,12 @@ public class GridCellFilter<T> implements Serializable {
             @Override
             public TextField getBiggestField() {
                 if (biggest == null) {
-                    biggest = genNumberField(BIGGEST);
+                    biggest = genNumberField();
+                    getBinder().forField(biggest)
+                            .withNullRepresentation("")
+                            .withValidator(text -> text != null && text.length() > 0, "invalid")
+                            .withConverter(getConverter())
+                            .bind("biggest");
                     biggest.setPlaceholder(biggestInputPrompt);
                 }
                 return biggest;
@@ -475,11 +485,8 @@ public class GridCellFilter<T> implements Serializable {
                 }
             }
 
-            private TextField genNumberField(String propertyId) {
+            private TextField genNumberField() {
                 TextField field = new TextField();
-                getBinder().forField(field)
-                        .withConverter(getConverter())
-                        .bind(propertyId);
                 field.setWidth("100%");
                 field.addStyleName(STYLENAME_GRIDCELLFILTER);
                 field.addStyleName(ValoTheme.TEXTFIELD_TINY);
@@ -523,9 +530,10 @@ public class GridCellFilter<T> implements Serializable {
 
             private void initBinderValueChangeHandler() {
                 getBinder().addValueChangeListener(e -> {
-                    TwoValueObject<V> value = (TwoValueObject) e.getValue();
-                    V smallest = value.getSmallest();
-                    V biggest = value.getBiggest();
+                    Object smallest = getBinder().getBean()
+                            .getSmallest();
+                    Object biggest = getBinder().getBean()
+                            .getBiggest();
                     if (smallest != null || biggest != null) {
                         if (smallest != null && biggest != null && smallest.equals(biggest)) {
                             replaceFilter(new EqualFilter(smallest), columnId);
@@ -545,7 +553,7 @@ public class GridCellFilter<T> implements Serializable {
 
             @Override
             public void clearFilter() {
-                getBinder().setBean(new TwoValueObject<V>());
+                getBinder().setBean(new TwoValueObject());
             }
         };
 
@@ -559,7 +567,7 @@ public class GridCellFilter<T> implements Serializable {
      * @param columnId id of property
      * @return RangeCellFilterComponent that holds both DateFields (smallest and biggest as propertyId) and FilterGroup
      */
-    public RangeCellFilterComponent<LocalDate, DateField, HorizontalLayout> setDateFilter(String columnId) {
+    public RangeCellFilterComponent<DateField, HorizontalLayout> setDateFilter(String columnId) {
         return setDateFilter(columnId, null, true);
     }
 
@@ -571,8 +579,8 @@ public class GridCellFilter<T> implements Serializable {
      * @param excludeEndOfDay biggest value until the end of the day (DAY + 23:59:59.999)
      * @return RangeCellFilterComponent that holds both DateFields (smallest and biggest as propertyId) and FilterGroup
      */
-    public RangeCellFilterComponent<LocalDate, DateField, HorizontalLayout> setDateFilter(String columnId, java.text.SimpleDateFormat dateFormat, boolean excludeEndOfDay) {
-        RangeCellFilterComponent<LocalDate, DateField, HorizontalLayout> filter = new RangeCellFilterComponent<LocalDate, DateField, HorizontalLayout>() {
+    public RangeCellFilterComponent<DateField, HorizontalLayout> setDateFilter(String columnId, java.text.SimpleDateFormat dateFormat, boolean excludeEndOfDay) {
+        RangeCellFilterComponent<DateField, HorizontalLayout> filter = new RangeCellFilterComponent<DateField, HorizontalLayout>() {
 
             private DateField smallest;
             private DateField biggest;
@@ -638,9 +646,8 @@ public class GridCellFilter<T> implements Serializable {
 
             private void initBinderValueChangeHandler() {
                 getBinder().addValueChangeListener(e -> {
-                    TwoValueObject<LocalDate> value = (TwoValueObject) e.getValue();
-                    LocalDate smallest = value.getSmallest();
-                    LocalDate biggest = value.getBiggest();
+                    Object smallest = getBinder().getBean().getSmallest();
+                    Object biggest = getBinder().getBean().getBiggest();
                     if (smallest != null || biggest != null) {
                         if (smallest != null && biggest != null && smallest.equals(biggest)) {
                             replaceFilter(new EqualFilter(smallest), columnId);
@@ -661,7 +668,7 @@ public class GridCellFilter<T> implements Serializable {
 
             @Override
             public void clearFilter() {
-                getBinder().setBean(new TwoValueObject<>());
+                getBinder().setBean(new TwoValueObject());
             }
         };
 
