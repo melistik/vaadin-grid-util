@@ -2,29 +2,38 @@ package org.vaadin.gridutil.demo;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Container.ItemSetChangeEvent;
-import com.vaadin.data.Container.ItemSetChangeListener;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.v7.data.Container.Filter;
+import com.vaadin.v7.data.Container.ItemSetChangeEvent;
+import com.vaadin.v7.data.Container.ItemSetChangeListener;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.Property.ValueChangeEvent;
+import com.vaadin.v7.data.Property.ValueChangeListener;
+import com.vaadin.v7.data.util.BeanItemContainer;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Grid.CellReference;
-import com.vaadin.ui.Grid.CellStyleGenerator;
-import com.vaadin.ui.Grid.FooterRow;
-import com.vaadin.ui.Grid.HeaderRow;
+import com.vaadin.ui.Notification;
+import com.vaadin.v7.ui.Grid.CellReference;
+import com.vaadin.v7.ui.Grid.CellStyleGenerator;
+import com.vaadin.v7.ui.Grid.FooterRow;
+import com.vaadin.v7.ui.Grid.HeaderRow;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.renderers.ClickableRenderer.RendererClickEvent;
-import com.vaadin.ui.renderers.ClickableRenderer.RendererClickListener;
-import com.vaadin.ui.renderers.DateRenderer;
+import com.vaadin.ui.UI;
+import com.vaadin.v7.ui.renderers.ClickableRenderer.RendererClickEvent;
+import com.vaadin.v7.ui.renderers.ClickableRenderer.RendererClickListener;
+import com.vaadin.v7.ui.renderers.DateRenderer;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.Grid;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.TextField;
+import com.vaadin.v7.ui.VerticalLayout;
 import org.vaadin.gridutil.GridUtil;
 import org.vaadin.gridutil.cell.CellFilterChangedListener;
 import org.vaadin.gridutil.cell.CellFilterComponent;
@@ -134,7 +143,7 @@ public class DemoUI extends UI {
 
                     @Override
                     public String convertToPresentation(final Country value, final Class<? extends String> targetType, final Locale locale)
-                            throws com.vaadin.data.util.converter.Converter.ConversionException {
+                            throws com.vaadin.v7.data.util.converter.Converter.ConversionException {
                         return String.format("%s <i>(%d)</i>", value.getName(), value.getPopulation());
                     }
                 });
