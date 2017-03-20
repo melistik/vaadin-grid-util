@@ -20,9 +20,13 @@ import com.vaadin.server.FontIcon;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
-import com.vaadin.v7.ui.*;
 import com.vaadin.v7.ui.Grid.HeaderRow;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.Grid;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.TextField;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
