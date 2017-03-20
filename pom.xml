@@ -5,7 +5,7 @@
 	<groupId>org.vaadin.addons</groupId>
 	<artifactId>vaadin-grid-util-root</artifactId>
 	<packaging>pom</packaging>
-	<version>1.1.0</version>
+	<version>1.9.0</version>
 
 	<modules>
 		<module>vaadin-grid-util</module>
@@ -29,9 +29,9 @@
 	</licenses>
 
 	<properties>
-		<vaadin.version>7.7.3</vaadin.version>
-		<project.source.version>1.6</project.source.version>
-		<project.target.version>1.6</project.target.version>
+		<vaadin.version>8.0.3</vaadin.version>
+		<project.source.version>1.8</project.source.version>
+		<project.target.version>1.8</project.target.version>
 		<project.encoding>UTF-8</project.encoding>
 		<maven.javadoc.failOnError>false</maven.javadoc.failOnError>
 
@@ -60,7 +60,7 @@
 		<connection>scm:git:git@github.com:melistik/vaadin-grid-util.git</connection>
 		<developerConnection>scm:git:git@github.com:melistik/vaadin-grid-util.git</developerConnection>
 		<url>https://github.com/melistik/vaadin-grid-util.git</url>
-		<tag>vaadin-grid-util-root-1.1.0</tag>
+		<tag>vaadin-grid-util-root-1.9.0</tag>
 	</scm>
 
 	<repositories>

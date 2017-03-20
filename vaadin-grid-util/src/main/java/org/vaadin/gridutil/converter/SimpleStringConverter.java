@@ -2,7 +2,7 @@ package org.vaadin.gridutil.converter;
 
 import java.util.Locale;
 
-import com.vaadin.data.util.converter.Converter;
+import com.vaadin.v7.data.util.converter.Converter;
 
 /**
  * SimpleStringConverter shorten the Converter a lot for simple String or HTML presentations<br>
@@ -27,7 +27,7 @@ public abstract class SimpleStringConverter<MODEL> implements Converter<String, 
 
 	@Override
 	public MODEL convertToModel(final String value, final Class<? extends MODEL> targetType, final Locale locale)
-			throws com.vaadin.data.util.converter.Converter.ConversionException {
+			throws com.vaadin.v7.data.util.converter.Converter.ConversionException {
 		return null;
 	}
 

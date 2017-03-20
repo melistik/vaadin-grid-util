@@ -2,7 +2,7 @@ package org.vaadin.gridutil.renderer;
 
 import org.vaadin.gridutil.client.renderer.buttonvalue.VButtonValueRenderer;
 
-import com.vaadin.ui.renderers.ClickableRenderer;
+import com.vaadin.v7.ui.renderers.ClickableRenderer;
 
 /**
  * Add view, edit and delete buttons next to the value (value is rendered as HTML)
@@ -50,7 +50,7 @@ public class ViewEditButtonValueRenderer extends ClickableRenderer<String> {
 		addClickListener(new RendererClickListener() {
 
 			@Override
-			public void click(final com.vaadin.ui.renderers.ClickableRenderer.RendererClickEvent event) {
+			public void click(final com.vaadin.v7.ui.renderers.ClickableRenderer.RendererClickEvent event) {
 				if (event.getRelativeX() == VButtonValueRenderer.VIEW_BITM) {
 					listener.onView(event);
 				} else {

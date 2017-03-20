@@ -1,6 +1,6 @@
 package org.vaadin.gridutil.renderer;
 
-import com.vaadin.ui.Grid.AbstractRenderer;
+import com.vaadin.v7.ui.Grid.AbstractRenderer;
 
 /**
  * Renders boolean Values as icons

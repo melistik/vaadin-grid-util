@@ -1,6 +1,6 @@
 package org.vaadin.gridutil.client.renderer;
 
-import com.vaadin.client.connectors.AbstractRendererConnector;
+import com.vaadin.v7.client.connectors.AbstractRendererConnector;
 import com.vaadin.shared.ui.Connect;
 
 /**

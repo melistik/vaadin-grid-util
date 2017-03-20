@@ -4,13 +4,13 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.vaadin.client.MouseEventDetailsBuilder;
-import com.vaadin.client.connectors.AbstractRendererConnector;
-import com.vaadin.client.connectors.ClickableRendererConnector;
-import com.vaadin.client.renderers.ClickableRenderer.RendererClickEvent;
-import com.vaadin.client.renderers.ClickableRenderer.RendererClickHandler;
+import com.vaadin.v7.client.connectors.AbstractRendererConnector;
+import com.vaadin.v7.client.connectors.ClickableRendererConnector;
+import com.vaadin.v7.client.renderers.ClickableRenderer.RendererClickEvent;
+import com.vaadin.v7.client.renderers.ClickableRenderer.RendererClickHandler;
 import com.vaadin.shared.MouseEventDetails;
-import com.vaadin.shared.ui.grid.renderers.RendererClickRpc;
-import com.vaadin.ui.renderers.ClickableRenderer;
+import com.vaadin.v7.shared.ui.grid.renderers.RendererClickRpc;
+import com.vaadin.v7.ui.renderers.ClickableRenderer;
 
 import elemental.json.JsonObject;
 
