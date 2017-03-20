@@ -2,7 +2,7 @@ package org.vaadin.gridutil.renderer;
 
 import org.vaadin.gridutil.client.renderer.indicator.IndicatorRendererState;
 
-import com.vaadin.ui.Grid.AbstractRenderer;
+import com.vaadin.v7.ui.Grid.AbstractRenderer;
 
 public class IndicatorRenderer extends AbstractRenderer<Double> {
 

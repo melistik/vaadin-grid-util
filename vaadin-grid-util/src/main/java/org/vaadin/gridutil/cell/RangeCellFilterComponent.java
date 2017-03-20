@@ -1,11 +1,11 @@
 package org.vaadin.gridutil.cell;
 
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.util.ObjectProperty;
-import com.vaadin.data.util.PropertysetItem;
+import com.vaadin.v7.data.fieldgroup.FieldGroup;
+import com.vaadin.v7.data.util.ObjectProperty;
+import com.vaadin.v7.data.util.PropertysetItem;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.HorizontalLayout;
 
 /**
  * extends CellFilterComponent to allow smallest and biggest filter Component

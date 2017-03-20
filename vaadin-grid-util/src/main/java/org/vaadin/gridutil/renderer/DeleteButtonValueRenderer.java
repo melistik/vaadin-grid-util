@@ -1,6 +1,6 @@
 package org.vaadin.gridutil.renderer;
 
-import com.vaadin.ui.renderers.ClickableRenderer;
+import com.vaadin.v7.ui.renderers.ClickableRenderer;
 
 /**
  * Add a delete buttons next to the value (value is rendered as HTML)

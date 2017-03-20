@@ -1,7 +1,7 @@
 package org.vaadin.gridutil.client.renderer.indicator;
 
 import com.vaadin.client.communication.StateChangeEvent;
-import com.vaadin.client.connectors.AbstractRendererConnector;
+import com.vaadin.v7.client.connectors.AbstractRendererConnector;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(org.vaadin.gridutil.renderer.IndicatorRenderer.class)

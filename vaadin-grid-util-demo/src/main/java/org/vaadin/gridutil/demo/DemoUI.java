@@ -1,30 +1,33 @@
 package org.vaadin.gridutil.demo;
 
-import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Container.ItemSetChangeEvent;
-import com.vaadin.data.Container.ItemSetChangeListener;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Grid.CellReference;
-import com.vaadin.ui.Grid.CellStyleGenerator;
-import com.vaadin.ui.Grid.FooterRow;
-import com.vaadin.ui.Grid.HeaderRow;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.renderers.ClickableRenderer.RendererClickEvent;
-import com.vaadin.ui.renderers.ClickableRenderer.RendererClickListener;
-import com.vaadin.ui.renderers.DateRenderer;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Container.Filter;
+import com.vaadin.v7.data.Container.ItemSetChangeEvent;
+import com.vaadin.v7.data.Container.ItemSetChangeListener;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.Property.ValueChangeEvent;
+import com.vaadin.v7.data.Property.ValueChangeListener;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
+import com.vaadin.v7.ui.*;
+import com.vaadin.v7.ui.Grid.CellReference;
+import com.vaadin.v7.ui.Grid.CellStyleGenerator;
+import com.vaadin.v7.ui.Grid.FooterRow;
+import com.vaadin.v7.ui.Grid.HeaderRow;
+import com.vaadin.v7.ui.renderers.ClickableRenderer.RendererClickEvent;
+import com.vaadin.v7.ui.renderers.ClickableRenderer.RendererClickListener;
+import com.vaadin.v7.ui.renderers.DateRenderer;
 import org.vaadin.gridutil.GridUtil;
 import org.vaadin.gridutil.cell.CellFilterChangedListener;
 import org.vaadin.gridutil.cell.CellFilterComponent;
@@ -49,7 +52,6 @@ import java.util.Locale;
 
 
 @SpringUI()
-@Theme("valo")
 @Widgetset("org.vaadin.gridutil.demo.DemoWidgetSet")
 public class DemoUI extends UI {
 
@@ -134,7 +136,7 @@ public class DemoUI extends UI {
 
                     @Override
                     public String convertToPresentation(final Country value, final Class<? extends String> targetType, final Locale locale)
-                            throws com.vaadin.data.util.converter.Converter.ConversionException {
+                            throws com.vaadin.v7.data.util.converter.Converter.ConversionException {
                         return String.format("%s <i>(%d)</i>", value.getName(), value.getPopulation());
                     }
                 });
@@ -240,9 +242,9 @@ public class DemoUI extends UI {
         // set gender Combo with custom icons
         CellFilterComponent<ComboBox> genderFilter = this.filter.setComboBoxFilter("gender", Arrays.asList(Inhabitants.Gender.MALE, Inhabitants.Gender.FEMALE));
         genderFilter.getComponent()
-                    .setItemIcon(Inhabitants.Gender.MALE, FontAwesome.MALE);
+                .setItemIcon(Inhabitants.Gender.MALE, FontAwesome.MALE);
         genderFilter.getComponent()
-                    .setItemIcon(Inhabitants.Gender.FEMALE, FontAwesome.FEMALE);
+                .setItemIcon(Inhabitants.Gender.FEMALE, FontAwesome.FEMALE);
 
         // simple filters
         this.filter.setTextFilter("name", true, true, "name starts with");
@@ -250,7 +252,7 @@ public class DemoUI extends UI {
 
         RangeCellFilterComponent<DateField, HorizontalLayout> dateFilter = this.filter.setDateFilter("birthday", new SimpleDateFormat("yyyy-MMM-dd"), true);
         dateFilter.getSmallestField()
-                  .setParseErrorMessage("da ist was schief gegangen :)");
+                .setParseErrorMessage("da ist was schief gegangen :)");
 
         this.filter.setBooleanFilter("onFacebook",
                 new GridCellFilter.BooleanRepresentation(FontAwesome.THUMBS_UP, "yes"),
@@ -274,7 +276,7 @@ public class DemoUI extends UI {
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setSpacing(true);
         fistHeaderRow.getCell("birthday")
-                     .setComponent(buttonLayout);
+                .setComponent(buttonLayout);
         Button clearAllFilters = new Button("clearAllFilters", new Button.ClickListener() {
 
             @Override
@@ -312,7 +314,7 @@ public class DemoUI extends UI {
             public void buttonClick(final ClickEvent event) {
                 CellFilterComponent<TextField> filter = DemoUI.this.filter.getCellFilter("name");
                 filter.getComponent()
-                      .setValue("eth");
+                        .setValue("eth");
                 filter.triggerUpdate();
             }
         });

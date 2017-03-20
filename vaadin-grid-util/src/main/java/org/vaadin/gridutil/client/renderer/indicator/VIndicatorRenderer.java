@@ -1,8 +1,8 @@
 package org.vaadin.gridutil.client.renderer.indicator;
 
 import com.google.gwt.core.shared.GWT;
-import com.vaadin.client.renderers.WidgetRenderer;
-import com.vaadin.client.widget.grid.RendererCellReference;
+import com.vaadin.v7.client.renderers.WidgetRenderer;
+import com.vaadin.v7.client.widget.grid.RendererCellReference;
 
 public class VIndicatorRenderer extends WidgetRenderer<Double, VIndicator> {
 

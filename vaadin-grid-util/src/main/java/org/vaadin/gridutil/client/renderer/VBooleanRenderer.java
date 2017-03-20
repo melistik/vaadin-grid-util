@@ -1,7 +1,7 @@
 package org.vaadin.gridutil.client.renderer;
 
-import com.vaadin.client.renderers.Renderer;
-import com.vaadin.client.widget.grid.RendererCellReference;
+import com.vaadin.v7.client.renderers.Renderer;
+import com.vaadin.v7.client.widget.grid.RendererCellReference;
 
 /**
  * HTML-Drawer for boolean values

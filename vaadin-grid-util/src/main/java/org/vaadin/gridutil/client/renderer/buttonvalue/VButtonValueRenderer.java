@@ -6,8 +6,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.vaadin.client.renderers.ClickableRenderer;
-import com.vaadin.client.widget.grid.RendererCellReference;
+import com.vaadin.v7.client.renderers.ClickableRenderer;
+import com.vaadin.v7.client.widget.grid.RendererCellReference;
 
 /**
  * UpperClass for all ButtonValueVariations: draws a FlowPanel, adds a HTML widget that could handle clicks and add a label for value

@@ -1,28 +1,28 @@
 package org.vaadin.gridutil.cell;
 
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Container.Filterable;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.fieldgroup.FieldGroup.CommitEvent;
-import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
-import com.vaadin.data.fieldgroup.FieldGroup.CommitHandler;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.converter.*;
-import com.vaadin.data.util.filter.Between;
-import com.vaadin.data.util.filter.Compare.Equal;
-import com.vaadin.data.util.filter.SimpleStringFilter;
-import com.vaadin.event.FieldEvents.TextChangeEvent;
-import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.FontIcon;
 import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.shared.ui.datefield.Resolution;
-import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
-import com.vaadin.ui.*;
-import com.vaadin.ui.Grid.HeaderRow;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Container.Filter;
+import com.vaadin.v7.data.Container.Filterable;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.Property.ValueChangeEvent;
+import com.vaadin.v7.data.Property.ValueChangeListener;
+import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitEvent;
+import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitException;
+import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitHandler;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.data.util.converter.*;
+import com.vaadin.v7.data.util.filter.Between;
+import com.vaadin.v7.data.util.filter.Compare.Equal;
+import com.vaadin.v7.data.util.filter.SimpleStringFilter;
+import com.vaadin.v7.event.FieldEvents.TextChangeEvent;
+import com.vaadin.v7.event.FieldEvents.TextChangeListener;
+import com.vaadin.v7.shared.ui.datefield.Resolution;
+import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
+import com.vaadin.v7.ui.*;
+import com.vaadin.v7.ui.Grid.HeaderRow;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -43,7 +43,8 @@ public class GridCellFilter implements Serializable {
     public static final String STYLENAME_GRIDCELLFILTER = "gridcellfilter";
 
     private static final long serialVersionUID = -6449115552660561941L;
-
+    private final static Date MIN_DATE_VALUE = new Date(0); // 1970-01-01 00:00:00
+    private final static Date MAX_DATE_VALUE = new Date(32503676399000L); // 2999-12-31 23:59:59
     private final Grid grid;
     private HeaderRow filterHeaderRow;
     private Map<Object, CellFilterComponent> cellFilters;
@@ -138,7 +139,7 @@ public class GridCellFilter implements Serializable {
                 for (Entry<Object, CellFilterComponent> entry : this.cellFilters.entrySet()) {
                     if (null != this.filterHeaderRow.getCell(entry.getKey())) {
                         this.filterHeaderRow.getCell(entry.getKey())
-                                            .setText("");
+                                .setText("");
                     }
                 }
                 this.grid.removeHeaderRow(this.filterHeaderRow);
@@ -176,7 +177,7 @@ public class GridCellFilter implements Serializable {
      */
     public void clearFilter(final Object columnId) {
         this.cellFilters.get(columnId)
-                        .clearFilter();
+                .clearFilter();
         removeFilter(columnId);
     }
 
@@ -350,7 +351,7 @@ public class GridCellFilter implements Serializable {
             @Override
             public ComboBox layoutComponent() {
                 BeanItemContainer container = new BeanItemContainer(list.get(0)
-                                                                        .getClass(), list);
+                        .getClass(), list);
 
                 this.comboBox.setNullSelectionAllowed(true);
                 this.comboBox.setImmediate(true);
@@ -378,7 +379,6 @@ public class GridCellFilter implements Serializable {
         handleFilterRow(columnId, filter);
         return filter;
     }
-
 
     /**
      * assign a <b>EqualFilter</b> to grid for given columnId
@@ -409,11 +409,11 @@ public class GridCellFilter implements Serializable {
             private Item genItem(final Boolean value, BooleanRepresentation representation) {
                 Item item = this.comboBox.getItem(this.comboBox.addItem());
                 item.getItemProperty("icon")
-                    .setValue(representation.getIcon());
+                        .setValue(representation.getIcon());
                 item.getItemProperty("value")
-                    .setValue(value);
+                        .setValue(value);
                 item.getItemProperty("caption")
-                    .setValue(representation.getCaption());
+                        .setValue(representation.getCaption());
                 return item;
             }
 
@@ -467,24 +467,6 @@ public class GridCellFilter implements Serializable {
         return filter.getComponent();
     }
 
-    public static class BooleanRepresentation {
-        private final FontIcon icon;
-        private final String caption;
-
-        public BooleanRepresentation(FontIcon icon, String caption) {
-            this.icon = icon;
-            this.caption = caption;
-        }
-
-        public FontIcon getIcon() {
-            return icon;
-        }
-
-        public String getCaption() {
-            return caption;
-        }
-    }
-
     /**
      * assign a <b>BetweenFilter</b> to grid for given columnId<br>
      * only supports type of <b>Integer, Double, Float, BigInteger and BigDecimal</b>
@@ -510,6 +492,7 @@ public class GridCellFilter implements Serializable {
                 .getType(columnId);
         RangeCellFilterComponent<TextField, HorizontalLayout> filter = new RangeCellFilterComponent<TextField, HorizontalLayout>() {
 
+            private static final long serialVersionUID = 1L;
             private TextField smallest, biggest;
 
             @Override
@@ -529,8 +512,6 @@ public class GridCellFilter implements Serializable {
                 }
                 return biggest;
             }
-
-            private static final long serialVersionUID = 1L;
 
             private Converter getConverter() {
                 if (type == Integer.class) {
@@ -648,9 +629,6 @@ public class GridCellFilter implements Serializable {
         return filter;
     }
 
-    private final static Date MIN_DATE_VALUE = new Date(0); // 1970-01-01 00:00:00
-    private final static Date MAX_DATE_VALUE = new Date(32503676399000L); // 2999-12-31 23:59:59
-
     /**
      * assign a <b>BetweenFilter</b> to grid for given columnId<br>
      *
@@ -672,6 +650,10 @@ public class GridCellFilter implements Serializable {
     public RangeCellFilterComponent<DateField, HorizontalLayout> setDateFilter(final Object columnId, final java.text.SimpleDateFormat dateFormat, final boolean excludeEndOfDay) {
         RangeCellFilterComponent<DateField, HorizontalLayout> filter = new RangeCellFilterComponent<DateField, HorizontalLayout>() {
 
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
             private DateField smallest;
             private DateField biggest;
 
@@ -690,11 +672,6 @@ public class GridCellFilter implements Serializable {
                 }
                 return biggest;
             }
-
-            /**
-             *
-             */
-            private static final long serialVersionUID = 1L;
 
             private DateField genDateField(final String propertyId) {
                 final DateField dateField = new DateField();
@@ -767,8 +744,10 @@ public class GridCellFilter implements Serializable {
                                 .getItemProperty(BIGGEST)
                                 .getValue();
                         if (smallestValue != null || biggestValue != null) {
-                            replaceFilter(new Between(columnId, smallestValue != null ? fixTiming(smallestValue, true) : MIN_DATE_VALUE, biggestValue != null ? fixTiming(biggestValue, excludeEndOfDay)
-                                    : MAX_DATE_VALUE), columnId);
+                            replaceFilter(new Between(columnId,
+                                    smallestValue != null ? fixTiming(smallestValue, true) : MIN_DATE_VALUE,
+                                    biggestValue != null ? fixTiming(biggestValue, excludeEndOfDay)
+                                            : MAX_DATE_VALUE), columnId);
                         } else {
                             removeFilter(columnId);
                         }
@@ -785,5 +764,23 @@ public class GridCellFilter implements Serializable {
 
         handleFilterRow(columnId, filter);
         return filter;
+    }
+
+    public static class BooleanRepresentation {
+        private final FontIcon icon;
+        private final String caption;
+
+        public BooleanRepresentation(FontIcon icon, String caption) {
+            this.icon = icon;
+            this.caption = caption;
+        }
+
+        public FontIcon getIcon() {
+            return icon;
+        }
+
+        public String getCaption() {
+            return caption;
+        }
     }
 }
