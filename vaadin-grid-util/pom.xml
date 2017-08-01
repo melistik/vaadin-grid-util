@@ -6,7 +6,7 @@
     <groupId>org.vaadin.addons</groupId>
     <artifactId>vaadin-grid-util</artifactId>
     <packaging>jar</packaging>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>2.1.0-SNAPSHOT</version>
 
 
     <name>GridUtil</name>
@@ -24,7 +24,7 @@
     </developers>
 
     <properties>
-        <vaadin.version>8.0.3</vaadin.version>
+        <vaadin.version>8.1.0</vaadin.version>
         <project.source.version>1.8</project.source.version>
         <project.target.version>1.8</project.target.version>
         <project.encoding>UTF-8</project.encoding>
