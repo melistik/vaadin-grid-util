@@ -3,6 +3,7 @@ package org.vaadin.gridutil.demo;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.data.ValueProvider;
+import com.vaadin.data.provider.Query;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.server.VaadinRequest;
@@ -10,6 +11,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.components.grid.FooterCell;
 import com.vaadin.ui.components.grid.FooterRow;
 import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.renderers.DateRenderer;
@@ -32,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @SpringUI()
@@ -39,7 +42,7 @@ import java.util.List;
 @Widgetset("org.vaadin.gridutil.demo.DemoWidgetSet")
 public class DemoUI extends UI {
 
-    private GridCellFilter filter;
+    private GridCellFilter<Inhabitants> filter;
 
     @Override
     protected void init(final VaadinRequest request) {
@@ -49,7 +52,7 @@ public class DemoUI extends UI {
         layout.setMargin(true);
         layout.setSpacing(true);
 
-        Grid grid = genGrid();
+        Grid<Inhabitants> grid = genGrid();
         layout.addComponent(grid);
         layout.setExpandRatio(grid, 1);
 
@@ -57,9 +60,9 @@ public class DemoUI extends UI {
 
     }
 
-    private Grid genGrid() {
+    private Grid<Inhabitants> genGrid() {
         // init Grid
-        final Grid grid = new Grid(Inhabitants.class);
+        final Grid<Inhabitants> grid = new Grid<>(Inhabitants.class);
         grid.setSizeFull();
 
         // init Container
@@ -68,15 +71,15 @@ public class DemoUI extends UI {
 
         setColumnRenderes(grid);
 
-        grid.setColumnOrder("id", "gender", "name", "bodySize", "birthday", "onFacebook");
-        grid.getColumn("country")
-                .setHidden(true);
+        grid.setColumnOrder("id", "gender", "name", "bodySize", "birthday", "onFacebook", "country");
 
         initFilter(grid);
         initFooterRow(grid, items);
         initExtraHeaderRow(grid);
 
         initColumnAlignments(grid);
+//        grid.getColumn("country")
+//                .setHidden(true);
         return grid;
     }
 
@@ -123,29 +126,20 @@ public class DemoUI extends UI {
      * @param grid
      * @param items
      */
-    private void initFooterRow(final Grid grid, List<Inhabitants> items) {
+    private void initFooterRow(final Grid<Inhabitants> grid, List<Inhabitants> items) {
         final FooterRow footerRow = grid.appendFooterRow();
         footerRow.getCell("id")
                 .setHtml("total:");
-        footerRow.join("gender", "name", "bodySize", "birthday", "onFacebook", "country");
+        final FooterCell footerCell = footerRow.join("gender", "name", "bodySize", "birthday", "onFacebook", "country");
         // inital total count
-        footerRow.getCell("gender")
-                .setHtml("<b>" + items.size() + "</b>");
+        footerCell.setHtml("<b>" + items.size() + "</b>");
 
         // filter change count recalculate
-        // TODO: need to find a solution for it
-        /*
-        container.addItemSetChangeListener(new ItemSetChangeListener() {
-
-            @Override
-            public void containerItemSetChange(final ItemSetChangeEvent event) {
-                footerRow.getCell("gender")
-                        .setHtml("<b>" + event.getContainer()
-                                .getItemIds()
-                                .size() + "</b>");
-            }
+        grid.getDataProvider().addDataProviderListener(event -> {
+            List<Inhabitants> data = event.getSource()
+                    .fetch(new Query<>()).collect(Collectors.toList());
+            footerCell.setHtml("<b>" + data.size() + "</b>");
         });
-        */
     }
 
     /**
@@ -202,8 +196,8 @@ public class DemoUI extends UI {
      *
      * @param grid
      */
-    private void initFilter(final Grid grid) {
-        this.filter = new GridCellFilter(grid, Inhabitants.class);
+    private void initFilter(final Grid<Inhabitants> grid) {
+        this.filter = new GridCellFilter<>(grid, Inhabitants.class);
         this.filter.setNumberFilter("id", Long.class);
 
         // set gender Combo with custom icons
