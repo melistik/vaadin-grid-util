@@ -4,6 +4,7 @@ import com.vaadin.data.BeanPropertySet;
 import com.vaadin.data.Converter;
 import com.vaadin.data.PropertySet;
 import com.vaadin.data.converter.*;
+import com.vaadin.data.provider.InMemoryDataProviderHelpers;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FontIcon;
@@ -36,7 +37,7 @@ public class GridCellFilter<T> implements Serializable {
     private static Date MIN_DATE_VALUE = new Date(0); // 1970-01-01 00:00:00
     private static Date MAX_DATE_VALUE = new Date(32503676399000L); // 2999-12-31 23:59:59
     private Grid grid;
-    private ListDataProvider dataProvider;
+    private ListDataProvider<T> dataProvider;
     private HeaderRow filterHeaderRow;
     private Map<String, CellFilterComponent> cellFilters;
     private Map<String, SerializablePredicate> assignedFilters;
@@ -62,7 +63,7 @@ public class GridCellFilter<T> implements Serializable {
         if (!(grid.getDataProvider() instanceof ListDataProvider)) {
             throw new RuntimeException("works only with ListDataProvider");
         } else {
-            dataProvider = (ListDataProvider) grid.getDataProvider();
+            dataProvider = (ListDataProvider<T>) grid.getDataProvider();
             propertySet = BeanPropertySet.get(beanType);
         }
     }
@@ -202,21 +203,28 @@ public class GridCellFilter<T> implements Serializable {
      * @param columnId id of property
      */
     public void replaceFilter(SerializablePredicate filter, String columnId) {
-        // TODO: needs to get new implementation
-
-        dataProvider.addFilter(propertySet.getProperty(columnId)
-                .get()
-                .getGetter(), filter);
-        /*
-        Filterable f = (Filterable) grid.getContainerDataSource();
-        if (assignedFilters.containsKey(columnId)) {
-            f.removeContainerFilter(assignedFilters.get(columnId));
-        }
-        f.addContainerFilter(filter);
         assignedFilters.put(columnId, filter);
-        grid.cancelEditor();
-        notifyCellFilterChanged();
-        */
+        refreshFilters();
+    }
+
+    private void refreshFilters() {
+        dataProvider.clearFilters();
+        SerializablePredicate<T> filter = null;
+        for (Entry<String, SerializablePredicate> entry:
+             assignedFilters.entrySet()) {
+            SerializablePredicate<T> singleFilter = InMemoryDataProviderHelpers.createValueProviderFilter(propertySet.getProperty(entry.getKey())
+                    .get()
+                    .getGetter(), entry.getValue());
+            if (filter == null) {
+                filter = singleFilter;
+            } else {
+                SerializablePredicate<T> tempFilter = filter;
+                filter = (item -> tempFilter.test(item) && singleFilter.test(item));
+            }
+        }
+        if (filter != null) {
+            dataProvider.setFilter(filter);
+        }
     }
 
     /**
@@ -229,17 +237,13 @@ public class GridCellFilter<T> implements Serializable {
     }
 
     protected void removeFilter(String columnId, boolean notify) {
-        // TODO: needs to get new implementation
-        /*
-        Filterable f = (Filterable) grid.getContainerDataSource();
         if (assignedFilters.containsKey(columnId)) {
-            f.removeContainerFilter(assignedFilters.get(columnId));
             assignedFilters.remove(columnId);
+            refreshFilters();
             if (notify) {
                 notifyCellFilterChanged();
             }
         }
-        */
     }
 
     /**
