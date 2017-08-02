@@ -15,12 +15,14 @@ import com.vaadin.shared.ui.datefield.DateResolution;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.themes.ValoTheme;
+import org.vaadin.gridutil.cell.filter.BetweenFilter;
 import org.vaadin.gridutil.cell.filter.EqualFilter;
 import org.vaadin.gridutil.cell.filter.SimpleStringFilter;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -210,9 +212,10 @@ public class GridCellFilter<T> implements Serializable {
     private void refreshFilters() {
         dataProvider.clearFilters();
         SerializablePredicate<T> filter = null;
-        for (Entry<String, SerializablePredicate> entry:
-             assignedFilters.entrySet()) {
-            SerializablePredicate<T> singleFilter = InMemoryDataProviderHelpers.createValueProviderFilter(propertySet.getProperty(entry.getKey())
+        for (Entry<String, SerializablePredicate> entry :
+                assignedFilters.entrySet()) {
+            final String columnId = entry.getKey();
+            SerializablePredicate<T> singleFilter = InMemoryDataProviderHelpers.createValueProviderFilter(propertySet.getProperty(columnId)
                     .get()
                     .getGetter(), entry.getValue());
             if (filter == null) {
@@ -584,6 +587,7 @@ public class GridCellFilter<T> implements Serializable {
      * @return RangeCellFilterComponent that holds both DateFields (smallest and biggest as propertyId) and FilterGroup
      */
     public RangeCellFilterComponent<DateField, HorizontalLayout> setDateFilter(String columnId, java.text.SimpleDateFormat dateFormat, boolean excludeEndOfDay) {
+        Class<?> propertyType = propertySet.getProperty(columnId).get().getType();
         RangeCellFilterComponent<DateField, HorizontalLayout> filter = new RangeCellFilterComponent<DateField, HorizontalLayout>() {
 
             private DateField smallest;
@@ -652,10 +656,14 @@ public class GridCellFilter<T> implements Serializable {
                 getBinder().addValueChangeListener(e -> {
                     Object smallest = getBinder().getBean().getSmallest();
                     Object biggest = getBinder().getBean().getBiggest();
-                    if (smallest != null || biggest != null) {
-                        if (smallest != null && biggest != null && smallest.equals(biggest)) {
-                            replaceFilter(new EqualFilter(smallest), columnId);
+                    Date smallestDate = checkObject(smallest);
+                    Date biggestDate = checkObject(biggest);
+                    if (this.smallest != null || biggest != null) {
+                        if (this.smallest != null && biggest != null && this.smallest.equals(biggest)) {
+                            replaceFilter(new EqualFilter(this.smallest), columnId);
                         } else {
+                            replaceFilter(new BetweenFilter(smallestDate != null ? fixTiming(smallestDate, true) : MIN_DATE_VALUE,
+                                    biggestDate != null ? fixTiming(biggestDate, excludeEndOfDay) : MAX_DATE_VALUE), columnId);
                             // TODO: needs between filter
                             /*
                             replaceFilter(new Between(columnId,
@@ -668,6 +676,16 @@ public class GridCellFilter<T> implements Serializable {
                         removeFilter(columnId);
                     }
                 });
+            }
+
+            private final LocalDateToDateConverter ldToDateConverter = new LocalDateToDateConverter();
+            private Date checkObject(Object value) {
+                if (value instanceof LocalDate) {
+                    return ldToDateConverter.convertToModel((LocalDate)value, null).getOrThrow(msg -> new IllegalArgumentException(msg));
+                } else if (value instanceof Date) {
+                    return (Date) value;
+                }
+                return null;
             }
 
             @Override
