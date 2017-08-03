@@ -588,6 +588,9 @@ public class GridCellFilter<T> implements Serializable {
      */
     public RangeCellFilterComponent<DateField, HorizontalLayout> setDateFilter(String columnId, java.text.SimpleDateFormat dateFormat, boolean excludeEndOfDay) {
         Class<?> propertyType = propertySet.getProperty(columnId).get().getType();
+        if(!Date.class.equals(propertyType)) {
+            throw new IllegalArgumentException("columnId " + columnId + " is not of type Date");
+        }
         RangeCellFilterComponent<DateField, HorizontalLayout> filter = new RangeCellFilterComponent<DateField, HorizontalLayout>() {
 
             private DateField smallest;
