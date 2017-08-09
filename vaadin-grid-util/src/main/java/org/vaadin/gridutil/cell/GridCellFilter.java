@@ -506,7 +506,7 @@ public class GridCellFilter<T> implements Serializable {
             }
 
             private DateField genDateField(final String propertyId, final SimpleDateFormat dateFormat) {
-                return FieldFactory.genDateField(this::getBinder, propertyId, dateFormat);
+                return FieldFactory.genDateField(getBinder(), propertyId, dateFormat);
             }
 
             @Override

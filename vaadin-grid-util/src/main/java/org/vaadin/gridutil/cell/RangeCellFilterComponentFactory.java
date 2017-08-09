@@ -61,7 +61,7 @@ public class RangeCellFilterComponentFactory {
                 }
 
                 private TextField genNumberField(final String propertyId, final Converter converter, final String inputPrompt) {
-                    return FieldFactory.genNumberField(() -> getBinder(), propertyId, converter, inputPrompt);
+                    return FieldFactory.genNumberField(getBinder(), propertyId, converter, inputPrompt);
                 }
 
                 @Override
@@ -78,22 +78,20 @@ public class RangeCellFilterComponentFactory {
 
                 private void initBinderValueChangeHandler() {
                     getBinder().addValueChangeListener(e -> {
-                        Object smallest = getBinder().getBean()
-                                .getSmallest();
-                        Object biggest = getBinder().getBean()
-                                .getBiggest();
+                        final T smallest = getBinder().getBean().getSmallest();
+                        final T biggest = getBinder().getBean().getBiggest();
                         if (smallest != null || biggest != null) {
-                            final T smallestValue = checkObject(smallest);
-                            final T biggestValue = checkObject(biggest);
+                            //final T smallestValue = checkObject(smallest);
+                            //final T biggestValue = checkObject(biggest);
                             if (smallest != null && biggest != null && smallest.equals(biggest)) {
                                 filterReplaceConsumer.accept(
-                                        new EqualFilter(smallestValue),
+                                        new EqualFilter(smallest),
                                         propertyId);
                             } else {
                                 filterReplaceConsumer.accept(
                                         new BetweenFilter(
-                                                (smallestValue != null ? smallestValue : NumberUtil.getBoundaryValue(propertyType, false)),
-                                                (biggestValue != null ? biggestValue : NumberUtil.getBoundaryValue(propertyType, true))
+                                                (smallest != null ? smallest : NumberUtil.getBoundaryValue(propertyType, false)),
+                                                (biggest != null ? biggest : NumberUtil.getBoundaryValue(propertyType, true))
                                         ),
                                         propertyId);
                             }

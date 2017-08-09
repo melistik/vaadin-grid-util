@@ -20,8 +20,7 @@ public class FieldFactory {
 
     }
 
-    public static <T> TextField genNumberField(Supplier<Binder<T>> binderSupplier, String propertyId, Converter converter, String inputPrompt) {
-        Binder<T> binder = binderSupplier.get();
+    public static <T> TextField genNumberField(Binder<T> binder, String propertyId, Converter converter, String inputPrompt) {
         final TextField field = new TextField();
         field.setWidth("100%");
         field.addStyleName(STYLENAME_GRIDCELLFILTER);
@@ -40,10 +39,10 @@ public class FieldFactory {
         return field;
     }
 
-    public static <T> DateField genDateField(Supplier<Binder<T>> binder, String propertyId, final java.text.SimpleDateFormat dateFormat) {
+    public static <T> DateField genDateField(Binder<T> binder, String propertyId, final java.text.SimpleDateFormat dateFormat) {
         DateField dateField = new DateField();
 
-        binder.get().bind(dateField, propertyId);
+        binder.bind(dateField, propertyId);
         if (dateFormat != null) {
             dateField.setDateFormat(dateFormat.toPattern());
         }
@@ -53,7 +52,7 @@ public class FieldFactory {
         dateField.addStyleName(STYLENAME_GRIDCELLFILTER);
         dateField.addStyleName(ValoTheme.DATEFIELD_TINY);
         dateField.addValueChangeListener(e -> {
-            if (binder.get().isValid()) {
+            if (binder.isValid()) {
                 dateField.setComponentError(null);
             }
         });
