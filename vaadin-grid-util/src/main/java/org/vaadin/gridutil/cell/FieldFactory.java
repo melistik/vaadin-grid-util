@@ -7,18 +7,12 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
 
-import java.util.function.Supplier;
-
 import static org.vaadin.gridutil.cell.GridCellFilter.STYLENAME_GRIDCELLFILTER;
 
 /**
  * Created by georg.hicker on 03.08.2017.
  */
 public class FieldFactory {
-
-    private FieldFactory() {
-
-    }
 
     public static <T> TextField genNumberField(Binder<T> binder, String propertyId, Converter converter, String inputPrompt) {
         final TextField field = new TextField();
@@ -32,7 +26,7 @@ public class FieldFactory {
         });
         binder.forField(field)
                 .withNullRepresentation("")
-                .withValidator(text -> text != null && text.length() > 0, "invalid")
+                // .withValidator(text -> text != null && text.length() > 0, "invalid")
                 .withConverter(converter)
                 .bind(propertyId);
         field.setPlaceholder(inputPrompt);
