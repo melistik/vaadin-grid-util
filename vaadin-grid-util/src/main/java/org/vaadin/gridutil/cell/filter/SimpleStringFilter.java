@@ -12,8 +12,9 @@ public class SimpleStringFilter implements SerializablePredicate<String> {
     final boolean onlyMatchPrefix;
 
     public SimpleStringFilter(String filterString, boolean ignoreCase, boolean onlyMatchPrefix) {
-        this.filterString = filterString;
         this.ignoreCase = ignoreCase;
+        // ignoreCase has to be applied to filterstring too, otherwise uppercase input won't work
+        this.filterString = this.ignoreCase ? filterString.toLowerCase() : filterString;
         this.onlyMatchPrefix = onlyMatchPrefix;
     }
 

@@ -5,16 +5,16 @@ import com.vaadin.server.SerializablePredicate;
 /**
  * Created by marten on 22.02.17.
  */
-public class EqualFilter implements SerializablePredicate<Object> {
+public class EqualFilter<T> implements SerializablePredicate<T> {
 
-    final Object toCompare;
+    final T toCompare;
 
-    public EqualFilter(Object toCompare) {
+    public EqualFilter(T toCompare) {
         this.toCompare = toCompare;
     }
 
     @Override
-    public boolean test(Object value) {
+    public boolean test(T value) {
         if (value == null && toCompare == null) {
             return true;
         }

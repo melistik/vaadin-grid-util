@@ -4,6 +4,7 @@ import com.vaadin.data.BeanPropertySet;
 import com.vaadin.data.Converter;
 import com.vaadin.data.PropertySet;
 import com.vaadin.data.converter.*;
+import com.vaadin.data.provider.InMemoryDataProviderHelpers;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FontIcon;
@@ -14,12 +15,15 @@ import com.vaadin.shared.ui.datefield.DateResolution;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.themes.ValoTheme;
+import org.vaadin.gridutil.cell.filter.BetweenFilter;
 import org.vaadin.gridutil.cell.filter.EqualFilter;
 import org.vaadin.gridutil.cell.filter.SimpleStringFilter;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -36,7 +40,7 @@ public class GridCellFilter<T> implements Serializable {
     private static Date MIN_DATE_VALUE = new Date(0); // 1970-01-01 00:00:00
     private static Date MAX_DATE_VALUE = new Date(32503676399000L); // 2999-12-31 23:59:59
     private Grid grid;
-    private ListDataProvider dataProvider;
+    private ListDataProvider<T> dataProvider;
     private HeaderRow filterHeaderRow;
     private Map<String, CellFilterComponent> cellFilters;
     private Map<String, SerializablePredicate> assignedFilters;
@@ -62,7 +66,7 @@ public class GridCellFilter<T> implements Serializable {
         if (!(grid.getDataProvider() instanceof ListDataProvider)) {
             throw new RuntimeException("works only with ListDataProvider");
         } else {
-            dataProvider = (ListDataProvider) grid.getDataProvider();
+            dataProvider = (ListDataProvider<T>) grid.getDataProvider();
             propertySet = BeanPropertySet.get(beanType);
         }
     }
@@ -202,21 +206,29 @@ public class GridCellFilter<T> implements Serializable {
      * @param columnId id of property
      */
     public void replaceFilter(SerializablePredicate filter, String columnId) {
-        // TODO: needs to get new implementation
-
-        dataProvider.addFilter(propertySet.getProperty(columnId)
-                .get()
-                .getGetter(), filter);
-        /*
-        Filterable f = (Filterable) grid.getContainerDataSource();
-        if (assignedFilters.containsKey(columnId)) {
-            f.removeContainerFilter(assignedFilters.get(columnId));
-        }
-        f.addContainerFilter(filter);
         assignedFilters.put(columnId, filter);
-        grid.cancelEditor();
-        notifyCellFilterChanged();
-        */
+        refreshFilters();
+    }
+
+    private void refreshFilters() {
+        dataProvider.clearFilters();
+        SerializablePredicate<T> filter = null;
+        for (Entry<String, SerializablePredicate> entry :
+                assignedFilters.entrySet()) {
+            final String columnId = entry.getKey();
+            SerializablePredicate<T> singleFilter = InMemoryDataProviderHelpers.createValueProviderFilter(propertySet.getProperty(columnId)
+                    .get()
+                    .getGetter(), entry.getValue());
+            if (filter == null) {
+                filter = singleFilter;
+            } else {
+                SerializablePredicate<T> tempFilter = filter;
+                filter = (item -> tempFilter.test(item) && singleFilter.test(item));
+            }
+        }
+        if (filter != null) {
+            dataProvider.setFilter(filter);
+        }
     }
 
     /**
@@ -229,17 +241,13 @@ public class GridCellFilter<T> implements Serializable {
     }
 
     protected void removeFilter(String columnId, boolean notify) {
-        // TODO: needs to get new implementation
-        /*
-        Filterable f = (Filterable) grid.getContainerDataSource();
         if (assignedFilters.containsKey(columnId)) {
-            f.removeContainerFilter(assignedFilters.get(columnId));
             assignedFilters.remove(columnId);
+            refreshFilters();
             if (notify) {
                 notifyCellFilterChanged();
             }
         }
-        */
     }
 
     /**
@@ -283,7 +291,6 @@ public class GridCellFilter<T> implements Serializable {
             TextField textField = new TextField();
             String currentValue = "";
 
-            @Override
             public void triggerUpdate() {
                 if (currentValue == null || currentValue.isEmpty()) {
                     removeFilter(columnId);
@@ -329,7 +336,6 @@ public class GridCellFilter<T> implements Serializable {
 
             ComboBox<B> comboBox = new ComboBox();
 
-            @Override
             public void triggerUpdate() {
                 if (comboBox.getValue() != null) {
                     replaceFilter(new EqualFilter(comboBox.getValue()), columnId);
@@ -381,7 +387,6 @@ public class GridCellFilter<T> implements Serializable {
 
             ComboBox<BooleanRepresentation> comboBox = new ComboBox();
 
-            @Override
             public void triggerUpdate() {
                 if (comboBox.getValue() != null) {
                     replaceFilter(new EqualFilter(comboBox.getValue()
@@ -420,9 +425,10 @@ public class GridCellFilter<T> implements Serializable {
      * only supports type of <b>Integer, Double, Float, BigInteger and BigDecimal</b>
      *
      * @param columnId id of property
+     * @param type     type of the property
      * @return RangeCellFilterComponent that holds both TextFields (smallest and biggest as propertyId) and FilterGroup
      */
-    public RangeCellFilterComponent<TextField, HorizontalLayout> setNumberFilter(String columnId, Class type) {
+    public <T extends Number & Comparable<? super T>> RangeCellFilterComponentTyped<T, TextField, HorizontalLayout> setNumberFilter(String columnId, Class type) {
         return setNumberFilter(columnId, type, String.format("couldn't convert to %s", type.getSimpleName()), null, null);
     }
 
@@ -430,132 +436,25 @@ public class GridCellFilter<T> implements Serializable {
      * assign a <b>BetweenFilter</b> to grid for given columnId<br>
      * only supports type of <b>Integer, Double, Float, BigInteger and BigDecimal</b>
      *
-     * @param columnId            id of property
-     * @param smallestInputPrompt hint for user
-     * @param biggestInputPrompt  hint for user
+     * @param columnId              id of property
+     * @param type                  type of the property
+     * @param converterErrorMessage message to be displayed in case of a converter error
+     * @param smallestInputPrompt   hint for user
+     * @param biggestInputPrompt    hint for user
      * @return RangeCellFilterComponent that holds both TextFields (smallest and biggest as propertyId) and FilterGroup
      */
-    public RangeCellFilterComponent<TextField, HorizontalLayout> setNumberFilter(String columnId, Class type, String converterErrorMessage, String smallestInputPrompt, String biggestInputPrompt) {
+    public <T extends Number & Comparable<? super T>> RangeCellFilterComponentTyped<T, TextField, HorizontalLayout> setNumberFilter(String columnId, Class<T> type, String converterErrorMessage, String smallestInputPrompt, String biggestInputPrompt) {
 
-        RangeCellFilterComponent<TextField, HorizontalLayout> filter = new RangeCellFilterComponent<TextField, HorizontalLayout>() {
-
-            private TextField smallest, biggest;
-
-            @Override
-            public TextField getSmallestField() {
-                if (smallest == null) {
-                    smallest = genNumberField();
-                    getBinder().forField(smallest)
-                            .withNullRepresentation("")
-                            .withValidator(text -> text != null && text.length() > 0, "invalid")
-                            .withConverter(getConverter())
-                            .bind("smallest");
-                    smallest.setPlaceholder(smallestInputPrompt);
-                }
-                return smallest;
-            }
-
-            @Override
-            public TextField getBiggestField() {
-                if (biggest == null) {
-                    biggest = genNumberField();
-                    getBinder().forField(biggest)
-                            .withNullRepresentation("")
-                            .withValidator(text -> text != null && text.length() > 0, "invalid")
-                            .withConverter(getConverter())
-                            .bind("biggest");
-                    biggest.setPlaceholder(biggestInputPrompt);
-                }
-                return biggest;
-            }
-
-            private Converter getConverter() {
-                if (type == Integer.class) {
-                    return new StringToIntegerConverter(converterErrorMessage);
-                } else if (type == Double.class) {
-                    return new StringToDoubleConverter(converterErrorMessage);
-                } else if (type == Float.class) {
-                    return new StringToFloatConverter(converterErrorMessage);
-                } else if (type == BigInteger.class) {
-                    return new StringToBigIntegerConverter(converterErrorMessage);
-                } else if (type == BigDecimal.class) {
-                    return new StringToBigDecimalConverter(converterErrorMessage);
-                } else {
-                    return new StringToLongConverter(converterErrorMessage);
-                }
-            }
-
-            private TextField genNumberField() {
-                TextField field = new TextField();
-                field.setWidth("100%");
-                field.addStyleName(STYLENAME_GRIDCELLFILTER);
-                field.addStyleName(ValoTheme.TEXTFIELD_TINY);
-                field.addValueChangeListener(e -> {
-                    if (getBinder().isValid()) {
-                        field.setComponentError(null);
-                        triggerUpdate();
-                    }
-                });
-                return field;
-            }
-
-            @Override
-            public HorizontalLayout layoutComponent() {
-                getHLayout().addComponent(getSmallestField());
-                getHLayout().addComponent(getBiggestField());
-                getHLayout().setExpandRatio(getSmallestField(), 1);
-                getHLayout().setExpandRatio(getBiggestField(), 1);
-
-                initBinderValueChangeHandler();
-
-                return getHLayout();
-            }
-
-            // BigInteger and BigDecimal is a bit dirty
-            public Number getValue(boolean max) {
-                if (type == Integer.class) {
-                    return max ? Integer.MAX_VALUE : Integer.MIN_VALUE;
-                } else if (type == Double.class) {
-                    return max ? Double.MAX_VALUE : Double.MIN_VALUE;
-                } else if (type == Float.class) {
-                    return max ? Float.MAX_VALUE : Float.MIN_VALUE;
-                } else if (type == BigInteger.class) {
-                    return max ? new BigInteger(String.valueOf(Long.MAX_VALUE)) : new BigInteger(String.valueOf(Long.MIN_VALUE));
-                } else if (type == BigDecimal.class) {
-                    return max ? new BigDecimal(String.valueOf(Long.MAX_VALUE)) : new BigDecimal(String.valueOf(Long.MIN_VALUE));
-                } else {
-                    return max ? Long.MAX_VALUE : Long.MIN_VALUE;
-                }
-            }
-
-            private void initBinderValueChangeHandler() {
-                getBinder().addValueChangeListener(e -> {
-                    Object smallest = getBinder().getBean()
-                            .getSmallest();
-                    Object biggest = getBinder().getBean()
-                            .getBiggest();
-                    if (smallest != null || biggest != null) {
-                        if (smallest != null && biggest != null && smallest.equals(biggest)) {
-                            replaceFilter(new EqualFilter(smallest), columnId);
-                        } else {
-                            // TODO: needs between filter
-                            /*
-                            replaceFilter(new Between(columnId, (Comparable) (smallestValue != null ? smallestValue : getValue(false)),
-                                    (Comparable) (biggestValue != null ? biggestValue : getValue(true))), columnId);
-                            */
-                        }
-                    } else {
-                        removeFilter(columnId);
-                    }
-
-                });
-            }
-
-            @Override
-            public void clearFilter() {
-                getBinder().setBean(new TwoValueObject());
-            }
-        };
+        RangeCellFilterComponentTyped<T, TextField, HorizontalLayout> filter =
+                RangeCellFilterComponentFactory.createForNumberType(
+                        columnId,
+                        type,
+                        converterErrorMessage,
+                        smallestInputPrompt,
+                        biggestInputPrompt,
+                        (serFilter, propertyId) -> this.replaceFilter(serFilter, propertyId),
+                        this::removeFilter
+                );
 
         handleFilterRow(columnId, filter);
         return filter;
@@ -580,15 +479,20 @@ public class GridCellFilter<T> implements Serializable {
      * @return RangeCellFilterComponent that holds both DateFields (smallest and biggest as propertyId) and FilterGroup
      */
     public RangeCellFilterComponent<DateField, HorizontalLayout> setDateFilter(String columnId, java.text.SimpleDateFormat dateFormat, boolean excludeEndOfDay) {
+        Class<?> propertyType = propertySet.getProperty(columnId).get().getType();
+        if (!Date.class.equals(propertyType)) {
+            throw new IllegalArgumentException("columnId " + columnId + " is not of type Date");
+        }
         RangeCellFilterComponent<DateField, HorizontalLayout> filter = new RangeCellFilterComponent<DateField, HorizontalLayout>() {
 
+            private final LocalDateToDateConverter ldToDateConverter = new LocalDateToDateConverter();
             private DateField smallest;
             private DateField biggest;
 
             @Override
             public DateField getSmallestField() {
                 if (smallest == null) {
-                    smallest = genDateField(SMALLEST);
+                    smallest = genDateField(SMALLEST, dateFormat);
                 }
                 return smallest;
             }
@@ -596,30 +500,13 @@ public class GridCellFilter<T> implements Serializable {
             @Override
             public DateField getBiggestField() {
                 if (biggest == null) {
-                    biggest = genDateField(BIGGEST);
+                    biggest = genDateField(BIGGEST, dateFormat);
                 }
                 return biggest;
             }
 
-            private DateField genDateField(String propertyId) {
-                DateField dateField = new DateField();
-
-                getBinder().bind(dateField, propertyId);
-                if (dateFormat != null) {
-                    dateField.setDateFormat(dateFormat.toPattern());
-                }
-                dateField.setWidth("100%");
-
-                dateField.setResolution(DateResolution.DAY);
-                dateField.addStyleName(STYLENAME_GRIDCELLFILTER);
-                dateField.addStyleName(ValoTheme.DATEFIELD_TINY);
-                dateField.addValueChangeListener(e -> {
-                    if (getBinder().isValid()) {
-                        dateField.setComponentError(null);
-                        triggerUpdate();
-                    }
-                });
-                return dateField;
+            private DateField genDateField(final String propertyId, final SimpleDateFormat dateFormat) {
+                return FieldFactory.genDateField(getBinder(), propertyId, dateFormat);
             }
 
             @Override
@@ -648,22 +535,28 @@ public class GridCellFilter<T> implements Serializable {
                 getBinder().addValueChangeListener(e -> {
                     Object smallest = getBinder().getBean().getSmallest();
                     Object biggest = getBinder().getBean().getBiggest();
-                    if (smallest != null || biggest != null) {
-                        if (smallest != null && biggest != null && smallest.equals(biggest)) {
-                            replaceFilter(new EqualFilter(smallest), columnId);
+                    Date smallestDate = checkObject(smallest);
+                    Date biggestDate = checkObject(biggest);
+                    if (this.smallest != null || biggest != null) {
+                        if (this.smallest != null && biggest != null && this.smallest.equals(biggest)) {
+                            replaceFilter(new EqualFilter(this.smallest), columnId);
                         } else {
-                            // TODO: needs between filter
-                            /*
-                            replaceFilter(new Between(columnId,
-                                    smallestValue != null ? fixTiming(smallestValue, true) : MIN_DATE_VALUE,
-                                    biggestValue != null ? fixTiming(biggestValue, excludeEndOfDay)
-                                            : MAX_DATE_VALUE), columnId);
-                            */
+                            replaceFilter(new BetweenFilter(smallestDate != null ? fixTiming(smallestDate, true) : MIN_DATE_VALUE,
+                                    biggestDate != null ? fixTiming(biggestDate, excludeEndOfDay) : MAX_DATE_VALUE), columnId);
                         }
                     } else {
                         removeFilter(columnId);
                     }
                 });
+            }
+
+            private Date checkObject(Object value) {
+                if (value instanceof LocalDate) {
+                    return ldToDateConverter.convertToModel((LocalDate) value, null).getOrThrow(msg -> new IllegalArgumentException(msg));
+                } else if (value instanceof Date) {
+                    return (Date) value;
+                }
+                return null;
             }
 
             @Override
