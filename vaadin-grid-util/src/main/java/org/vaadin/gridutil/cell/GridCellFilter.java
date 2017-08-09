@@ -1,9 +1,8 @@
 package org.vaadin.gridutil.cell;
 
 import com.vaadin.data.BeanPropertySet;
-import com.vaadin.data.Converter;
 import com.vaadin.data.PropertySet;
-import com.vaadin.data.converter.*;
+import com.vaadin.data.converter.LocalDateToDateConverter;
 import com.vaadin.data.provider.InMemoryDataProviderHelpers;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
@@ -11,7 +10,6 @@ import com.vaadin.server.FontIcon;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.ValueChangeMode;
-import com.vaadin.shared.ui.datefield.DateResolution;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.themes.ValoTheme;
@@ -20,8 +18,6 @@ import org.vaadin.gridutil.cell.filter.EqualFilter;
 import org.vaadin.gridutil.cell.filter.SimpleStringFilter;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
@@ -37,15 +33,25 @@ import java.util.Map.Entry;
 public class GridCellFilter<T> implements Serializable {
 
     public static String STYLENAME_GRIDCELLFILTER = "gridcellfilter";
+
     private static Date MIN_DATE_VALUE = new Date(0); // 1970-01-01 00:00:00
+
     private static Date MAX_DATE_VALUE = new Date(32503676399000L); // 2999-12-31 23:59:59
+
     private Grid grid;
+
     private ListDataProvider<T> dataProvider;
+
     private HeaderRow filterHeaderRow;
+
     private Map<String, CellFilterComponent> cellFilters;
+
     private Map<String, SerializablePredicate> assignedFilters;
+
     private boolean visible = true;
+
     private List<CellFilterChangedListener> cellFilterChangedListeners;
+
     private PropertySet<T> propertySet;
 
     /**
@@ -119,13 +125,10 @@ public class GridCellFilter<T> implements Serializable {
 
     /**
      * will remove or add the filterHeaderRow<br>
-     * badly the Connectors of the Cell-Components log an error message<br>
-     * <i>Widget is still attached to the DOM after the connector ComboBoxConnector has been unregistered. Widget was removed</i><br>
-     * that's why it deprecated. The grid itself has no feature for changing the visibility of a headerRow
+     * The grid itself has no feature for changing the visibility of a headerRow
      *
      * @param visibile should get displayed?
      */
-    @Deprecated
     public void setVisible(boolean visibile) {
         if (visible != visibile) {
             if (visibile) {
@@ -289,6 +292,7 @@ public class GridCellFilter<T> implements Serializable {
         CellFilterComponent<TextField> filter = new CellFilterComponent<TextField>() {
 
             TextField textField = new TextField();
+
             String currentValue = "";
 
             public void triggerUpdate() {
@@ -479,14 +483,18 @@ public class GridCellFilter<T> implements Serializable {
      * @return RangeCellFilterComponent that holds both DateFields (smallest and biggest as propertyId) and FilterGroup
      */
     public RangeCellFilterComponent<DateField, HorizontalLayout> setDateFilter(String columnId, java.text.SimpleDateFormat dateFormat, boolean excludeEndOfDay) {
-        Class<?> propertyType = propertySet.getProperty(columnId).get().getType();
+        Class<?> propertyType = propertySet.getProperty(columnId)
+                .get()
+                .getType();
         if (!Date.class.equals(propertyType)) {
             throw new IllegalArgumentException("columnId " + columnId + " is not of type Date");
         }
         RangeCellFilterComponent<DateField, HorizontalLayout> filter = new RangeCellFilterComponent<DateField, HorizontalLayout>() {
 
             private final LocalDateToDateConverter ldToDateConverter = new LocalDateToDateConverter();
+
             private DateField smallest;
+
             private DateField biggest;
 
             @Override
@@ -533,8 +541,10 @@ public class GridCellFilter<T> implements Serializable {
 
             private void initBinderValueChangeHandler() {
                 getBinder().addValueChangeListener(e -> {
-                    Object smallest = getBinder().getBean().getSmallest();
-                    Object biggest = getBinder().getBean().getBiggest();
+                    Object smallest = getBinder().getBean()
+                            .getSmallest();
+                    Object biggest = getBinder().getBean()
+                            .getBiggest();
                     Date smallestDate = checkObject(smallest);
                     Date biggestDate = checkObject(biggest);
                     if (this.smallest != null || biggest != null) {
@@ -552,7 +562,8 @@ public class GridCellFilter<T> implements Serializable {
 
             private Date checkObject(Object value) {
                 if (value instanceof LocalDate) {
-                    return ldToDateConverter.convertToModel((LocalDate) value, null).getOrThrow(msg -> new IllegalArgumentException(msg));
+                    return ldToDateConverter.convertToModel((LocalDate) value, null)
+                            .getOrThrow(msg -> new IllegalArgumentException(msg));
                 } else if (value instanceof Date) {
                     return (Date) value;
                 }
@@ -572,10 +583,13 @@ public class GridCellFilter<T> implements Serializable {
     public static class BooleanRepresentation {
 
         public static BooleanRepresentation TRUE_VALUE = new BooleanRepresentation(true, VaadinIcons.CHECK_SQUARE, Boolean.TRUE.toString());
+
         public static BooleanRepresentation FALSE_VALUE = new BooleanRepresentation(false, VaadinIcons.CLOSE, Boolean.FALSE.toString());
 
         private boolean value;
+
         private FontIcon icon;
+
         private String caption;
 
         public BooleanRepresentation(Boolean value, FontIcon icon, String caption) {
