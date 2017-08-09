@@ -5,7 +5,7 @@
     <groupId>org.vaadin.addons</groupId>
     <artifactId>vaadin-grid-util</artifactId>
     <packaging>jar</packaging>
-    <version>2.1.0</version>
+    <version>2.1.1-SNAPSHOT</version>
 
 
     <name>GridUtil</name>
