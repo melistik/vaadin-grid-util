@@ -1,7 +1,6 @@
 package org.vaadin.gridutil.cell;
 
 import com.vaadin.data.Converter;
-import com.vaadin.data.converter.*;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
@@ -31,7 +30,7 @@ public class RangeCellFilterComponentFactory {
                 @Override
                 public TextField getSmallestField() {
                     if (smallest == null) {
-                        smallest = genNumberField(SMALLEST, getConverter(), smallestInputPrompt);
+                        smallest = genNumberField(SMALLEST, NumberUtil.getConverter(propertyType, converterErrorMessage), smallestInputPrompt);
                     }
                     return smallest;
                 }
@@ -39,25 +38,9 @@ public class RangeCellFilterComponentFactory {
                 @Override
                 public TextField getBiggestField() {
                     if (biggest == null) {
-                        biggest = genNumberField(BIGGEST, getConverter(), biggestInputPrompt);
+                        biggest = genNumberField(BIGGEST, NumberUtil.getConverter(propertyType, converterErrorMessage), biggestInputPrompt);
                     }
                     return biggest;
-                }
-
-                private Converter getConverter() {
-                    if (Integer.class.equals(propertyType)) {
-                        return new StringToIntegerConverter(converterErrorMessage);
-                    } else if (Double.class.equals(propertyType)) {
-                        return new StringToDoubleConverter(converterErrorMessage);
-                    } else if (Float.class.equals(propertyType)) {
-                        return new StringToFloatConverter(converterErrorMessage);
-                    } else if (BigInteger.class.equals(propertyType)) {
-                        return new StringToBigIntegerConverter(converterErrorMessage);
-                    } else if (BigDecimal.class.equals(propertyType)) {
-                        return new StringToBigDecimalConverter(converterErrorMessage);
-                    } else {
-                        return new StringToLongConverter(converterErrorMessage);
-                    }
                 }
 
                 private TextField genNumberField(final String propertyId, final Converter converter, final String inputPrompt) {
@@ -78,8 +61,10 @@ public class RangeCellFilterComponentFactory {
 
                 private void initBinderValueChangeHandler() {
                     getBinder().addValueChangeListener(e -> {
-                        final T smallest = getBinder().getBean().getSmallest();
-                        final T biggest = getBinder().getBean().getBiggest();
+                        final T smallest = getBinder().getBean()
+                                .getSmallest();
+                        final T biggest = getBinder().getBean()
+                                .getBiggest();
                         if (smallest != null || biggest != null) {
                             //final T smallestValue = checkObject(smallest);
                             //final T biggestValue = checkObject(biggest);
@@ -103,7 +88,8 @@ public class RangeCellFilterComponentFactory {
                 }
 
                 private T checkObject(Object value) {
-                    if (value != null && value.getClass().equals(propertyType)) {
+                    if (value != null && value.getClass()
+                            .equals(propertyType)) {
                         return propertyType.cast(value);
                     }
                     return null;

@@ -10,8 +10,6 @@ import java.math.BigInteger;
  * Created by georg.hicker on 03.08.2017.
  */
 public class NumberUtil {
-    private NumberUtil() {
-    }
 
     public static <T extends Number & Comparable<? super T>> Converter getConverter(final Class<T> type, final String converterErrorMessage) {
         if (Integer.class.equals(type)) {
