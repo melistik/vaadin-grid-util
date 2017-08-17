@@ -230,6 +230,7 @@ public class GridCellFilter<T> implements Serializable {
                 }catch (Exception ex){
                     e.printStackTrace();
                     ex.printStackTrace();
+                    throw e;
                 }
             }
 
