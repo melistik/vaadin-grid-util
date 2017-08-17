@@ -2,6 +2,7 @@ package org.vaadin.gridutil.cell;
 
 import com.vaadin.data.BeanPropertySet;
 import com.vaadin.data.PropertySet;
+import com.vaadin.data.ValueProvider;
 import com.vaadin.data.converter.LocalDateToDateConverter;
 import com.vaadin.data.provider.InMemoryDataProviderHelpers;
 import com.vaadin.data.provider.ListDataProvider;
@@ -219,9 +220,20 @@ public class GridCellFilter<T> implements Serializable {
         for (Entry<String, SerializablePredicate> entry :
                 assignedFilters.entrySet()) {
             final String columnId = entry.getKey();
-            SerializablePredicate<T> singleFilter = InMemoryDataProviderHelpers.createValueProviderFilter(propertySet.getProperty(columnId)
-                    .get()
-                    .getGetter(), entry.getValue());
+
+            ValueProvider<T, ?> provider = null;
+            try {
+                provider = propertySet.getProperty(columnId).get().getGetter();
+            } catch (Exception e) {
+                try {
+                    provider = grid.getColumn(columnId).getValueProvider();
+                }catch (Exception ex){
+                    e.printStackTrace();
+                    ex.printStackTrace();
+                }
+            }
+
+            SerializablePredicate<T> singleFilter = InMemoryDataProviderHelpers.createValueProviderFilter(provider, entry.getValue());
             if (filter == null) {
                 filter = singleFilter;
             } else {
