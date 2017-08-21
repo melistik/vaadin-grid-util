@@ -3,6 +3,7 @@ package org.vaadin.gridutil.demo;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.data.ValueProvider;
+import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.Query;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.SerializablePredicate;
@@ -22,6 +23,7 @@ import org.vaadin.gridutil.cell.CellFilterChangedListener;
 import org.vaadin.gridutil.cell.CellFilterComponent;
 import org.vaadin.gridutil.cell.GridCellFilter;
 import org.vaadin.gridutil.cell.RangeCellFilterComponent;
+import org.vaadin.gridutil.datasource.FilteredDataProvider;
 import org.vaadin.gridutil.demo.data.Country.Continent;
 import org.vaadin.gridutil.demo.data.DummyDataGen;
 import org.vaadin.gridutil.demo.data.Inhabitants;
@@ -66,9 +68,9 @@ public class DemoUI extends UI {
         final Grid<Inhabitants> grid = new Grid<>(Inhabitants.class);
         grid.setSizeFull();
 
-        // init Container
+        // init DataProvider
         List<Inhabitants> items = DummyDataGen.genInhabitants(1000);
-        grid.setItems(items);
+        grid.setDataProvider(new FilteredDataProvider<>(DataProvider.ofCollection(items)));
 
         setColumnRenderes(grid);
 
