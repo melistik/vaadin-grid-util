@@ -107,9 +107,9 @@ public class DemoUI extends UI {
                 .setRenderer(new BooleanRenderer())
                 .setWidth(130);
 
-		/*
+        /*
          * the icon of the editButton will get overwritten below by css styling @see DemoUI.initColumnAlignments
-		 */
+         */
         grid.addColumn((ValueProvider<Inhabitants, String>) value -> String.format("%s <i>(%d)</i>",
                 value.getCountry()
                         .getName(),
@@ -208,7 +208,7 @@ public class DemoUI extends UI {
 
         // simple filters
         this.filter.setTextFilter("name", true, true, "name starts with");
-         this.filter.setNumberFilter("bodySize", Double.class, "invalid input", "smallest", "biggest");
+        this.filter.setNumberFilter("bodySize", Double.class, "invalid input", "smallest", "biggest");
 
         RangeCellFilterComponent<DateField, HorizontalLayout> dateFilter = this.filter.setDateFilter("birthday",
                 new SimpleDateFormat("yyyy-MMM-dd"),
@@ -253,7 +253,6 @@ public class DemoUI extends UI {
                 this.visibile = !this.visibile;
                 changeVisibility.setIcon(this.visibile ? VaadinIcons.EYE_SLASH : VaadinIcons.EYE);
                 DemoUI.this.filter.setVisible(this.visibile);
-                Notification.show("changed visibility to: " + this.visibile + "! Sometimes it's working sometimes not - it's deprecated!", Type.ERROR_MESSAGE);
             }
         });
         changeVisibility.setIcon(VaadinIcons.EYE_SLASH);
@@ -297,18 +296,18 @@ public class DemoUI extends UI {
                 .setStyleGenerator(e -> GridUtil.ALIGN_CELL_CENTER);
         grid.getColumn("country")
                 .setStyleGenerator(e -> {
-            /*
-             * example how to change the icon of the buttons
-             *
-             * @formatter:off
-             * .v-grid-cell.link-icon .v-button-bar button.v-edit span:before {
-             *   color: blue; // recolor icon
-             *   content: "\f0c1"; // content-code of FontAwesome that is served by vaadin!
-             * }
-             * @formatter:on
-             */
-            return "link-icon";
-        });
+                    /*
+                     * example how to change the icon of the buttons
+                     *
+                     * @formatter:off
+                     * .v-grid-cell.link-icon .v-button-bar button.v-edit span:before {
+                     *   color: blue; // recolor icon
+                     *   content: "\f0c1"; // content-code of FontAwesome that is served by vaadin!
+                     * }
+                     * @formatter:on
+                     */
+                    return "link-icon";
+                });
     }
 
     /**
@@ -328,7 +327,7 @@ public class DemoUI extends UI {
                 return true;
             }
 
-            if (value  == null) {
+            if (value == null) {
                 return false;
             }
             if (value.getCountry() != null) {
