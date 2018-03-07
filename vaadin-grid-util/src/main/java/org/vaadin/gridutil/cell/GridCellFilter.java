@@ -79,6 +79,17 @@ public class GridCellFilter<T> implements Serializable {
     }
 
     /**
+     * keeps link to Grid and added HeaderRow<br>
+     * afterwards you need to set filter specification for each row<br>
+     * please take care that your Container implements Filterable!
+     *
+     * @param grid that should get added a HeaderRow that this component will manage
+     */
+    public GridCellFilter(Grid<T> grid) {
+        this(grid, grid.getBeanType());
+    }
+
+    /**
      * generated HeaderRow
      *
      * @return added HeaderRow during intialization
