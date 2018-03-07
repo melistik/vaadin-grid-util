@@ -2,6 +2,7 @@ package org.vaadin.gridutil.cell;
 
 import com.vaadin.data.BeanPropertySet;
 import com.vaadin.data.PropertySet;
+import com.vaadin.data.ValueProvider;
 import com.vaadin.data.converter.LocalDateToDateConverter;
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.data.provider.DataProvider;
@@ -76,6 +77,17 @@ public class GridCellFilter<T> implements Serializable {
             dataProvider = (ConfigurableFilterDataProvider<T, GridFilter, GridFilter>) grid.getDataProvider();
             propertySet = BeanPropertySet.get(beanType);
         }
+    }
+
+    /**
+     * keeps link to Grid and added HeaderRow<br>
+     * afterwards you need to set filter specification for each row<br>
+     * please take care that your Container implements Filterable!
+     *
+     * @param grid that should get added a HeaderRow that this component will manage
+     */
+    public GridCellFilter(Grid<T> grid) {
+        this(grid, grid.getBeanType());
     }
 
     /**
@@ -215,15 +227,36 @@ public class GridCellFilter<T> implements Serializable {
     }
 
     private void refreshFilters() {
-        GridFilter filter = new GridFilter();
-        for (Entry<String, CellFilter> entry : assignedFilters.entrySet()) {
+        dataProvider.clearFilters();
+        SerializablePredicate<T> filter = null;
+        for (Entry<String, SerializablePredicate> entry :
+                assignedFilters.entrySet()) {
             final String columnId = entry.getKey();
-//            SerializablePredicate<T> singleFilter = InMemoryDataProviderHelpers.createValueProviderFilter(propertySet.getProperty(columnId)
-//                    .get()
-//                    .getGetter(), entry.getValue());
-            filter.addCellFilter(entry.getValue());
+
+            ValueProvider<T, ?> provider = null;
+            try {
+                provider = propertySet.getProperty(columnId).get().getGetter();
+            } catch (Exception e) {
+                try {
+                    provider = grid.getColumn(columnId).getValueProvider();
+                }catch (Exception ex){
+                    e.printStackTrace();
+                    ex.printStackTrace();
+                    throw e;
+                }
+            }
+
+            SerializablePredicate<T> singleFilter = InMemoryDataProviderHelpers.createValueProviderFilter(provider, entry.getValue());
+            if (filter == null) {
+                filter = singleFilter;
+            } else {
+                SerializablePredicate<T> tempFilter = filter;
+                filter = (item -> tempFilter.test(item) && singleFilter.test(item));
+            }
         }
-        dataProvider.setFilter(filter);
+        if (filter != null) {
+            dataProvider.setFilter(filter);
+        }
     }
 
     /**
