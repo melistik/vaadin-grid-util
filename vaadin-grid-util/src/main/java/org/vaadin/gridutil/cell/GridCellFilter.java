@@ -4,19 +4,18 @@ import com.vaadin.data.BeanPropertySet;
 import com.vaadin.data.PropertySet;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.converter.LocalDateToDateConverter;
-import com.vaadin.data.provider.ConfigurableFilterDataProvider;
-import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.InMemoryDataProviderHelpers;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FontIcon;
+import com.vaadin.server.SerializablePredicate;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.themes.ValoTheme;
 import org.vaadin.gridutil.cell.filter.BetweenFilter;
-import org.vaadin.gridutil.cell.filter.CellFilter;
 import org.vaadin.gridutil.cell.filter.EqualFilter;
-import org.vaadin.gridutil.cell.filter.GridFilter;
 import org.vaadin.gridutil.cell.filter.SimpleStringFilter;
 
 import java.io.Serializable;
@@ -42,13 +41,13 @@ public class GridCellFilter<T> implements Serializable {
 
     private Grid grid;
 
-    private ConfigurableFilterDataProvider<T, GridFilter, GridFilter> dataProvider;
+    private ListDataProvider<T> dataProvider;
 
     private HeaderRow filterHeaderRow;
 
     private Map<String, CellFilterComponent> cellFilters;
 
-    private Map<String, CellFilter> assignedFilters;
+    private Map<String, SerializablePredicate> assignedFilters;
 
     private boolean visible = true;
 
@@ -70,11 +69,11 @@ public class GridCellFilter<T> implements Serializable {
         assignedFilters = new HashMap<>();
         cellFilterChangedListeners = new ArrayList<>();
 
-        DataProvider dp = grid.getDataProvider();
-        if (!(dp instanceof ConfigurableFilterDataProvider)) {
-            throw new RuntimeException("works only with ConfigurableFilterDataProvider");
+
+        if (!(grid.getDataProvider() instanceof ListDataProvider)) {
+            throw new RuntimeException("works only with ListDataProvider");
         } else {
-            dataProvider = (ConfigurableFilterDataProvider<T, GridFilter, GridFilter>) grid.getDataProvider();
+            dataProvider = (ListDataProvider<T>) grid.getDataProvider();
             propertySet = BeanPropertySet.get(beanType);
         }
     }
@@ -221,7 +220,7 @@ public class GridCellFilter<T> implements Serializable {
      * @param filter   container filter
      * @param columnId id of property
      */
-    public void replaceFilter(CellFilter filter, String columnId) {
+    public void replaceFilter(SerializablePredicate filter, String columnId) {
         assignedFilters.put(columnId, filter);
         refreshFilters();
     }
@@ -324,7 +323,7 @@ public class GridCellFilter<T> implements Serializable {
                 if (currentValue == null || currentValue.isEmpty()) {
                     removeFilter(columnId);
                 } else {
-                    replaceFilter(new SimpleStringFilter(columnId, currentValue, ignoreCase, onlyMatchPrefix), columnId);
+                    replaceFilter(new SimpleStringFilter(currentValue, ignoreCase, onlyMatchPrefix), columnId);
                 }
             }
 
@@ -367,7 +366,7 @@ public class GridCellFilter<T> implements Serializable {
 
             public void triggerUpdate() {
                 if (comboBox.getValue() != null) {
-                    replaceFilter(new EqualFilter(columnId, comboBox.getValue()), columnId);
+                    replaceFilter(new EqualFilter(comboBox.getValue()), columnId);
                 } else {
                     removeFilter(columnId);
                 }
@@ -418,7 +417,7 @@ public class GridCellFilter<T> implements Serializable {
 
             public void triggerUpdate() {
                 if (comboBox.getValue() != null) {
-                    replaceFilter(new EqualFilter(columnId, comboBox.getValue()
+                    replaceFilter(new EqualFilter(comboBox.getValue()
                             .getValue()), columnId);
                 } else {
                     removeFilter(columnId);
@@ -508,12 +507,12 @@ public class GridCellFilter<T> implements Serializable {
      * @return RangeCellFilterComponent that holds both DateFields (smallest and biggest as propertyId) and FilterGroup
      */
     public RangeCellFilterComponent<DateField, HorizontalLayout> setDateFilter(String columnId, java.text.SimpleDateFormat dateFormat, boolean excludeEndOfDay) {
-//        Class<?> propertyType = propertySet.getProperty(columnId)
-//                .get()
-//                .getType();
-//        if (!Date.class.equals(propertyType)) {
-//            throw new IllegalArgumentException("columnId " + columnId + " is not of type Date");
-//        }
+        Class<?> propertyType = propertySet.getProperty(columnId)
+                .get()
+                .getType();
+        if (!Date.class.equals(propertyType)) {
+            throw new IllegalArgumentException("columnId " + columnId + " is not of type Date");
+        }
         RangeCellFilterComponent<DateField, HorizontalLayout> filter = new RangeCellFilterComponent<DateField, HorizontalLayout>() {
 
             private final LocalDateToDateConverter ldToDateConverter = new LocalDateToDateConverter();
@@ -574,9 +573,9 @@ public class GridCellFilter<T> implements Serializable {
                     Date biggestDate = checkObject(biggest);
                     if (this.smallest != null || biggest != null) {
                         if (this.smallest != null && biggest != null && this.smallest.equals(biggest)) {
-                            replaceFilter(new EqualFilter(columnId, this.smallest), columnId);
+                            replaceFilter(new EqualFilter(this.smallest), columnId);
                         } else {
-                            replaceFilter(new BetweenFilter(columnId, smallestDate != null ? fixTiming(smallestDate, true) : MIN_DATE_VALUE,
+                            replaceFilter(new BetweenFilter(smallestDate != null ? fixTiming(smallestDate, true) : MIN_DATE_VALUE,
                                     biggestDate != null ? fixTiming(biggestDate, excludeEndOfDay) : MAX_DATE_VALUE), columnId);
                         }
                     } else {

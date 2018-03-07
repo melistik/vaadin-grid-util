@@ -22,7 +22,6 @@ import org.vaadin.gridutil.cell.CellFilterChangedListener;
 import org.vaadin.gridutil.cell.CellFilterComponent;
 import org.vaadin.gridutil.cell.GridCellFilter;
 import org.vaadin.gridutil.cell.RangeCellFilterComponent;
-import org.vaadin.gridutil.cell.filter.CellFilter;
 import org.vaadin.gridutil.demo.data.Country.Continent;
 import org.vaadin.gridutil.demo.data.DummyDataGen;
 import org.vaadin.gridutil.demo.data.Inhabitants;
@@ -315,12 +314,11 @@ public class DemoUI extends UI {
     /**
      * example of a custom Filter that filter's by a subpropertiy of an object
      */
-    private class CustomFilter extends CellFilter<Inhabitants> implements SerializablePredicate<Inhabitants> {
+    private class CustomFilter implements SerializablePredicate<Inhabitants> {
 
         private final Continent continent;
 
         public CustomFilter(final Continent continent) {
-            super("country");
             this.continent = continent;
         }
 
