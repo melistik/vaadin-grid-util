@@ -1,10 +1,10 @@
 package org.vaadin.gridutil.cell;
 
 import com.vaadin.data.Converter;
-import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import org.vaadin.gridutil.cell.filter.BetweenFilter;
+import org.vaadin.gridutil.cell.filter.CellFilter;
 import org.vaadin.gridutil.cell.filter.EqualFilter;
 
 import java.math.BigDecimal;
@@ -17,7 +17,7 @@ import java.util.function.Consumer;
  */
 public class RangeCellFilterComponentFactory {
 
-    public static <T extends Number & Comparable<? super T>> RangeCellFilterComponentTyped<T, TextField, HorizontalLayout> createForNumberType(String propertyId, Class<T> propertyType, String converterErrorMessage, String smallestInputPrompt, String biggestInputPrompt, BiConsumer<SerializablePredicate<T>, String> filterReplaceConsumer, Consumer<String> filterRemoveConsumer) {
+    public static <T extends Number & Comparable<? super T>> RangeCellFilterComponentTyped<T, TextField, HorizontalLayout> createForNumberType(String propertyId, Class<T> propertyType, String converterErrorMessage, String smallestInputPrompt, String biggestInputPrompt, BiConsumer<CellFilter<T>, String> filterReplaceConsumer, Consumer<String> filterRemoveConsumer) {
         if (Integer.class.equals(propertyType)
                 || Long.class.equals(propertyType)
                 || Double.class.equals(propertyType)
@@ -70,11 +70,11 @@ public class RangeCellFilterComponentFactory {
                             //final T biggestValue = checkObject(biggest);
                             if (smallest != null && biggest != null && smallest.equals(biggest)) {
                                 filterReplaceConsumer.accept(
-                                        new EqualFilter(smallest),
-                                        propertyId);
+                                        new EqualFilter(propertyId, smallest), propertyId);
                             } else {
                                 filterReplaceConsumer.accept(
                                         new BetweenFilter(
+                                                propertyId,
                                                 (smallest != null ? smallest : NumberUtil.getBoundaryValue(propertyType, false)),
                                                 (biggest != null ? biggest : NumberUtil.getBoundaryValue(propertyType, true))
                                         ),
