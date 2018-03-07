@@ -40,7 +40,7 @@ Details to the addon you can find on [Vaadin](https://vaadin.com/directory#!addo
 
 Filtering
 ========
-Design your Grid as usal. In order to assign a Filter HeaderRow go like this:
+Design your Grid as usual. In order to assign a Filter HeaderRow go like this:
 
 ```java
 // init filter this add's a HeaderRow to the given grid
