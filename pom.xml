@@ -5,7 +5,7 @@
     <groupId>org.vaadin.addons</groupId>
     <artifactId>vaadin-grid-util-root</artifactId>
     <packaging>pom</packaging>
-    <version>2.1.2-SNAPSHOT</version>
+    <version>2.1.1-SNAPSHOT</version>
 
     <modules>
         <module>vaadin-grid-util</module>
