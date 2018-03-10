@@ -5,7 +5,6 @@ import com.vaadin.data.PropertySet;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.converter.LocalDateToDateConverter;
 import com.vaadin.data.provider.InMemoryDataProviderHelpers;
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FontIcon;
 import com.vaadin.server.SerializablePredicate;
@@ -17,6 +16,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import org.vaadin.gridutil.cell.filter.BetweenFilter;
 import org.vaadin.gridutil.cell.filter.EqualFilter;
 import org.vaadin.gridutil.cell.filter.SimpleStringFilter;
+import org.vaadin.gridutil.datasource.FilteredDataProvider;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -41,7 +41,7 @@ public class GridCellFilter<T> implements Serializable {
 
     private Grid grid;
 
-    private ListDataProvider<T> dataProvider;
+    private FilteredDataProvider<T> dataProvider;
 
     private HeaderRow filterHeaderRow;
 
@@ -69,11 +69,10 @@ public class GridCellFilter<T> implements Serializable {
         assignedFilters = new HashMap<>();
         cellFilterChangedListeners = new ArrayList<>();
 
-
-        if (!(grid.getDataProvider() instanceof ListDataProvider)) {
-            throw new RuntimeException("works only with ListDataProvider");
+        if (!(grid.getDataProvider() instanceof FilteredDataProvider)) {
+            throw new RuntimeException("works only with FilteredDataProvider");
         } else {
-            dataProvider = (ListDataProvider<T>) grid.getDataProvider();
+            dataProvider = (FilteredDataProvider<T>) grid.getDataProvider();
             propertySet = BeanPropertySet.get(beanType);
         }
     }
@@ -226,7 +225,7 @@ public class GridCellFilter<T> implements Serializable {
     }
 
     private void refreshFilters() {
-        dataProvider.clearFilters();
+        dataProvider.setFilter(null);
         SerializablePredicate<T> filter = null;
         for (Entry<String, SerializablePredicate> entry :
                 assignedFilters.entrySet()) {
